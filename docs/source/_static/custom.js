@@ -59,7 +59,8 @@ class LanguageSwitcher {
 
     detectLanguage() {
         const path = window.location.pathname;
-        if (path.includes('index_en.html') || path.includes('/en/')) {
+        // Check if we're in the html-en directory (English version)
+        if (path.includes('/html-en/') || path.includes('html-en/index_en.html')) {
             return 'en';
         }
         return 'zh';
@@ -75,24 +76,24 @@ class LanguageSwitcher {
 
         const switcherDiv = document.createElement('div');
         switcherDiv.className = 'language-switcher';
-        
+
         const select = document.createElement('select');
         select.id = 'language-select';
-        
+
         const optionZh = document.createElement('option');
         optionZh.value = 'zh';
         optionZh.textContent = '中文';
-        
+
         const optionEn = document.createElement('option');
         optionEn.value = 'en';
         optionEn.textContent = 'English';
-        
+
         select.appendChild(optionZh);
         select.appendChild(optionEn);
         select.value = this.currentLang;
-        
+
         select.addEventListener('change', (e) => this.switchLanguage(e.target.value));
-        
+
         switcherDiv.appendChild(select);
         navContent.insertBefore(switcherDiv, navContent.firstChild);
     }
@@ -102,23 +103,22 @@ class LanguageSwitcher {
         let newPath;
 
         if (lang === 'zh') {
-            // Switch to Chinese
-            if (currentPath.includes('index_en.html')) {
-                newPath = currentPath.replace('index_en.html', 'index.html');
-            } else if (currentPath.includes('/en/')) {
-                newPath = currentPath.replace('/en/', '/zh_CN/');
-            } else {
-                return;
-            }
+            // Switch to Chinese (html-zh directory)
+            newPath = currentPath.replace(/\/html-en\//, '/html-zh/');
+            newPath = newPath.replace('index_en.html', 'index.html');
+            // Also replace /en/ with /zh_CN/ in the path
+            newPath = newPath.replace(/\/en\//, '/zh_CN/');
         } else {
-            // Switch to English
-            if (currentPath.includes('index.html') && !currentPath.includes('index_en.html')) {
-                newPath = currentPath.replace('index.html', 'index_en.html');
-            } else if (currentPath.includes('/zh_CN/')) {
-                newPath = currentPath.replace('/zh_CN/', '/en/');
-            } else {
-                return;
-            }
+            // Switch to English (html-en directory)
+            newPath = currentPath.replace(/\/html-zh\//, '/html-en/');
+            newPath = newPath.replace('index.html', 'index_en.html');
+            // Also replace /zh_CN/ with /en/ in the path
+            newPath = newPath.replace(/\/zh_CN\//, '/en/');
+        }
+
+        // If the path hasn't changed, we're likely already on the correct language version
+        if (newPath === currentPath) {
+            return;
         }
 
         window.location.href = newPath;
