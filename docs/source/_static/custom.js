@@ -66,8 +66,6 @@ class ThemeManager {
 class LanguageSwitcher {
     constructor() {
         this.currentLang = this.detectLanguage();
-        this.currentBuildDir = this.detectBuildDir();
-        this.currentPage = this.getCurrentPage();
         this.init();
     }
 
@@ -77,31 +75,6 @@ class LanguageSwitcher {
             return 'en';
         }
         return 'zh';
-    }
-
-    detectBuildDir() {
-        const path = window.location.pathname;
-        if (path.includes('/html-en/')) {
-            return 'html-en';
-        }
-        if (path.includes('/html-zh/')) {
-            return 'html-zh';
-        }
-        return null;
-    }
-
-    getCurrentPage() {
-        const path = window.location.pathname;
-        // Extract just the filename or the last part of the path
-        const segments = path.split('/').filter(s => s);
-        if (segments.length === 0) {
-            return 'index.html';
-        }
-        const lastSegment = segments[segments.length - 1];
-        if (lastSegment.endsWith('.html')) {
-            return lastSegment;
-        }
-        return 'index.html';
     }
 
     init() {
@@ -152,77 +125,49 @@ class LanguageSwitcher {
         if (lang === this.currentLang) return;
 
         const currentPath = window.location.pathname;
-        let newPath = currentPath;
+        const segments = currentPath.split('/').filter(s => s);
+        
+        const isEn = lang === 'en';
+        const targetBuildDir = isEn ? 'html-en' : 'html-zh';
+        const targetContentDir = isEn ? 'en' : 'zh_CN';
+        const targetIndexPage = isEn ? 'index_en.html' : 'index.html';
+        const oldIndexPage = isEn ? 'index.html' : 'index_en.html';
 
-        // Build paths based on target language
-        const buildDir = lang === 'zh' ? 'html-zh' : 'html-en';
-        const indexPage = lang === 'zh' ? 'index.html' : 'index_en.html';
-        const contentDir = lang === 'zh' ? 'zh_CN' : 'en';
+        let newPath = '';
 
-        // Replace build directory
-        newPath = newPath.replace(/html-zh|html-en/g, buildDir);
-
-        // Replace content directory
-        newPath = newPath.replace(/zh_CN|en/g, contentDir);
-
-        // Handle index page
-        if (newPath.includes('index.html') || newPath.includes('index_en.html')) {
-            if (lang === 'zh') {
-                newPath = newPath.replace('index_en.html', 'index.html');
-            } else {
-                newPath = newPath.replace('index.html', 'index_en.html');
-            }
-        }
-
-        // Handle trailing slash
-        if (newPath.endsWith('/')) {
-            newPath += indexPage;
-        }
-
-        localStorage.setItem('preferred_lang', lang);
-        window.location.href = newPath;
-    }
-            } else {
-                // Switch from Chinese to English
-                newPath = currentPath.replace(/\/html-zh\//g, '/html-en/');
-                newPath = newPath.replace('index.html', 'index_en.html');
-                // If we're in a subpage, maintain the same page name
-                if (newPath.includes('/zh_CN/')) {
-                    newPath = newPath.replace(/\/zh_CN\//g, '/en/');
-                }
-            }
+        if (currentPath.includes('html-zh') || currentPath.includes('html-en')) {
+            // Mode 1: Absolute path from build root
+            newPath = currentPath.replace(/html-zh|html-en/g, targetBuildDir);
+            newPath = newPath.replace(/\/zh_CN\/|\/en\//g, `/${targetContentDir}/`);
+            newPath = newPath.replace(oldIndexPage, targetIndexPage);
         } else {
-            // Serving from a single build directory (e.g., build/html or build/html-zh)
-            // Paths look like: /index.html or /zh_CN/introduction.html
-            if (lang === 'zh') {
-                // Switch from English to Chinese
-                newPath = currentPath.replace(/\/en\//g, '/zh_CN/');
-                newPath = newPath.replace('index_en.html', 'index.html');
+            // Mode 2: Relative path from current serving root
+            const currentPage = segments.length > 0 ? segments[segments.length - 1] : '';
+            const inSubDir = segments.length > 1 || (segments.length === 1 && !segments[0].endsWith('.html'));
+            
+            let upToParent = '../'; // Base up to get out of current build dir
+            if (inSubDir) {
+                upToParent += '../'; // One more up to get out of content dir (zh_CN/ or en/)
+            }
+            
+            newPath = upToParent + targetBuildDir + '/';
+            if (inSubDir) {
+                newPath += targetContentDir + '/';
+                newPath += currentPage ? currentPage.replace(oldIndexPage, targetIndexPage) : targetIndexPage;
             } else {
-                // Switch from Chinese to English
-                newPath = currentPath.replace(/\/zh_CN\//g, '/en/');
-                if (newPath === '/index.html' || newPath.endsWith('/index.html')) {
-                    newPath = newPath.replace('index.html', 'index_en.html');
-                }
+                newPath += currentPage ? currentPage.replace(oldIndexPage, targetIndexPage) : targetIndexPage;
             }
         }
-
-        // Handle edge case: if path ends with /, append the appropriate index
-        if (newPath.endsWith('/')) {
-            newPath += lang === 'zh' ? 'index.html' : 'index_en.html';
+        
+        // Final fallback to ensure the index page is correct for the language
+        if (isEn && newPath.endsWith('index.html')) {
+            newPath = newPath.replace('index.html', 'index_en.html');
+        } else if (!isEn && newPath.endsWith('index_en.html')) {
+            newPath = newPath.replace('index_en.html', 'index.html');
         }
 
         localStorage.setItem('preferred_lang', lang);
         window.location.href = newPath;
-    }
-
-    getBuildPrefix(lang) {
-        const currentPath = window.location.pathname;
-        // Find how many directories we are deep from the build directory
-        const depth = currentPath.split('/').length - (currentPath.includes('/html-') ? 4 : 2);
-        const prefix = '../'.repeat(Math.max(0, depth));
-        const buildDir = lang === 'zh' ? 'html-zh/' : 'html-en/';
-        return prefix + buildDir;
     }
 }
 
@@ -299,15 +244,24 @@ class CodeBlockEnhancer {
             pre.classList.remove('line-numbers');
             const lines = pre.querySelectorAll('.line');
             lines.forEach(line => {
-                const span = line;
-                span.outerHTML = span.innerHTML;
+                const text = line.textContent;
+                line.replaceWith(document.createTextNode(text + '\n'));
             });
+            // This is a bit of a hack, might need better logic to perfectly restore
+            location.reload(); 
         } else {
             pre.classList.add('line-numbers');
-            const code = pre.innerHTML;
+            const code = pre.textContent;
             const lines = code.split('\n');
-            const wrappedLines = lines.map(line => `<span class="line">${line}</span>`).join('\n');
-            pre.innerHTML = wrappedLines;
+            pre.innerHTML = '';
+            lines.forEach((lineText, index) => {
+                if (index === lines.length - 1 && lineText === '') return;
+                const span = document.createElement('span');
+                span.className = 'line';
+                span.textContent = lineText;
+                pre.appendChild(span);
+                pre.appendChild(document.createTextNode('\n'));
+            });
         }
     }
 }
