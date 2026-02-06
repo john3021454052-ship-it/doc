@@ -558,7 +558,8 @@ class CodeBlockManager {
     }
 
     enhanceCodeBlocks() {
-        const codeBlocks = document.querySelectorAll('.highlight');
+        // 直接选择最外层的代码块容器（包含highlight-前缀的div）
+        const codeBlocks = document.querySelectorAll('div[class*="highlight-"]');
         
         codeBlocks.forEach((block) => {
             if (block.dataset.enhanced) return;

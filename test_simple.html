@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试 Copy 按钮功能</title>
+    <style>
+        /* 复制必要的CSS样式 */
+        .code-block-wrapper {
+            position: relative;
+            margin: 2em 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e1e4e5;
+            transition: all 0.3s ease;
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e1e4e5;
+            height: 28px;
+            min-height: 28px;
+            box-sizing: border-box;
+        }
+
+        .copy-btn {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            margin: 0;
+            background-color: transparent;
+            color: #6c757d;
+            border: 1px solid transparent;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:not(.hidden) {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .copy-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #2980b9;
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .copy-btn.copied {
+            color: #28a745 !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>测试 Copy 按钮功能</h1>
+    
+    <div class="highlight-python notranslate">
+        <div class="highlight">
+            <pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">example_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s1">'your_api_key'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Hello World'</span><span class="p">)</span>
+</pre></div>
+    </div>
+    
+    <div class="highlight-bash notranslate">
+        <div class="highlight">
+            <pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>example-api-sdk
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"Installation complete"</span>
+</pre></div>
+    </div>
+    
+    <script>
+        // 简化的测试代码
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始查找代码块...');
+            
+            const codeBlocks = document.querySelectorAll('[class*="highlight"]');
+            console.log('找到', codeBlocks.length, '个代码块元素');
+            
+            codeBlocks.forEach((block, index) => {
+                console.log('处理代码块', index, ':', block.className);
+                
+                // 跳过内层的highlight div，只处理最外层的容器
+                if (block.classList.contains('highlight') && block.parentElement && 
+                    block.parentElement.classList.contains('highlight')) {
+                    console.log('跳过内层highlight div');
+                    return;
+                }
+                
+                console.log('为代码块创建包装器:', block.className);
+                
+                // 创建包装器
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-block-wrapper';
+                
+                // 创建header
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'code-block-header';
+                
+                // 创建copy按钮
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn hidden';
+                copyBtn.title = 'Copy Code';
+                copyBtn.innerHTML = '📋';
+                copyBtn.onclick = function() {
+                    const pre = block.querySelector('pre');
+                    if (pre) {
+                        navigator.clipboard.writeText(pre.textContent).then(() => {
+                            copyBtn.innerHTML = '✅';
+                            copyBtn.classList.add('copied');
+                            setTimeout(() => {
+                                copyBtn.innerHTML = '📋';
+                                copyBtn.classList.remove('copied');
+                            }, 2000);
+                        });
+                    }
+                };
+                
+                headerDiv.appendChild(copyBtn);
+                
+                // 重构DOM
+                block.parentNode.insertBefore(wrapper, block);
+                wrapper.appendChild(headerDiv);
+                wrapper.appendChild(block);
+                
+                // 标记为已处理
+                block.dataset.enhanced = 'true';
+                
+                // 添加点击事件显示copy按钮
+                wrapper.addEventListener('click', function(e) {
+                    if (!e.target.closest('.copy-btn')) {
+                        copyBtn.classList.remove('hidden');
+                    }
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!wrapper.contains(e.target)) {
+                        copyBtn.classList.add('hidden');
+                    }
+                });
+                
+                console.log('代码块包装器创建完成');
+            });
+        });
+    </script>
+</body>
+</html>
