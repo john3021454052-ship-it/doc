@@ -89,23 +89,35 @@ All 7 required features have been successfully implemented, tested, and verified
 ### 4. Language Switcher Dropdown
 **Status: FULLY IMPLEMENTED**
 
-- ✅ Dropdown menu positioned at top-right of content area
-- ✅ Options: "中文" and "English"
+- ✅ Dropdown menu positioned in the sidebar below search box
+- ✅ Options: "简体中文" and "English"
 - ✅ Automatic language detection from URL path
+- ✅ **Directory tree (sidebar navigation) changes when switching languages**
 - ✅ Seamless navigation between language versions
+- ✅ Maintains current page context (e.g., introduction.md in both languages)
 
 **Implementation:**
-- LanguageSwitcher class in `docs/source/_static/custom.js` (lines 54-126)
-- CSS styling: `.language-switcher` class
-- Positioned at: `top: 10px, right: 20px`
+- LanguageSwitcher class in `docs/source/_static/custom.js` (lines 66-202)
+- CSS styling: `.language-switcher-sidebar` class
+- Positioned in sidebar via `.wy-side-nav-search` selector
 
 **Navigation Logic:**
-- Detects current language from URL
-  - Chinese: `index.html` or `/zh_CN/` paths
-  - English: `index_en.html` or `/en/` paths
-- Switches between corresponding pages
+- Detects current language and build directory from URL
+  - Chinese: `/html-zh/` directory, `index.html` or `/zh_CN/` paths
+  - English: `/html-en/` directory, `index_en.html` or `/en/` paths
+- **When switching languages, navigates between different build directories**
+  - This causes a full page reload with the language-specific TOC
+  - Chinese build: `html-zh/` with Chinese navigation from `index.rst`
+  - English build: `html-en/` with English navigation from `index_en.rst`
+- Maintains page context during switch:
+  - `html-zh/zh_CN/introduction.html` ↔ `html-en/en/introduction.html`
   - `index.html` ↔ `index_en.html`
-  - `/zh_CN/page.html` ↔ `/en/page.html`
+
+**Key Improvement:**
+The language switcher now properly navigates between separate Sphinx build directories, ensuring that:
+1. The sidebar navigation (directory tree) changes to reflect the current language
+2. Each language version has its own TOC generated from its respective index file
+3. Users see the correct navigation structure for the language they've selected
 
 ---
 
@@ -416,10 +428,12 @@ JavaScript classes: 3
 ## 🚀 Usage
 
 **For Users:**
-1. Open `docs/build/html/index.html` for Chinese version
-2. Open `docs/build/html/index_en.html` for English version
-3. Use the language switcher dropdown to change languages
-4. Click theme toggle button to switch between day/night modes
+1. Open `docs/build/html-zh/index.html` for Chinese version
+2. Open `docs/build/html-en/index_en.html` for English version
+3. Use the language switcher dropdown in the sidebar to change languages
+   - **Important**: When switching languages, the entire page reloads and the directory tree (sidebar navigation) changes
+   - Each language has its own navigation structure generated from its respective index file
+4. Click theme toggle button (below sidebar) to switch between day/night modes
 5. Use search to find content (supports Chinese and English)
 6. Click Copy button above code blocks to copy code
 7. Click Line button to toggle line numbers
