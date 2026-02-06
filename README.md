@@ -111,16 +111,18 @@ make clean
 
 After building, open the generated HTML files in your browser:
 
-- Chinese version: `docs/build/html/index.html`
-- English version: `docs/build/html/index_en.html`
+- Chinese version: `docs/build/html-zh/index.html`
+- English version: `docs/build/html-en/index_en.html`
 
 For local development, you can use Python's built-in HTTP server:
 ```bash
-cd docs/build/html
+cd docs/build/html-zh
 python -m http.server 8000
 ```
 
 Then visit `http://localhost:8000` in your browser.
+
+**Note**: Each language version is built into a separate directory to ensure proper navigation and language switching. Use the language switcher dropdown to switch between Chinese and English versions.
 
 ## Architecture
 
