@@ -228,3 +228,277 @@ body.dark-mode .highlight pre.line-numbers .line::before {
         margin-top: 10px;
     }
 }
+
+/* Highlight.js Darcula Light Theme Override for Light Mode */
+body:not(.dark-mode) .hljs {
+    background: #f5f5f5 !important;
+    color: #000000 !important;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+body:not(.dark-mode) .hljs-comment,
+body:not(.dark-mode) .hljs-quote {
+    color: #8c8c8c !important;
+    font-style: italic;
+}
+
+body:not(.dark-mode) .hljs-keyword,
+body:not(.dark-mode) .hljs-selector-tag,
+body:not(.dark-mode) .hljs-literal {
+    color: #000080 !important;
+    font-weight: bold;
+}
+
+body:not(.dark-mode) .hljs-string,
+body:not(.dark-mode) .hljs-regexp {
+    color: #008000 !important;
+    font-weight: bold;
+}
+
+body:not(.dark-mode) .hljs-number {
+    color: #0000ff !important;
+}
+
+body:not(.dark-mode) .hljs-tag,
+body:not(.dark-mode) .hljs-section,
+body:not(.dark-mode) .hljs-title,
+body:not(.dark-mode) .hljs-type,
+body:not(.dark-mode) .hljs-name {
+    color: #000080 !important;
+    font-weight: bold;
+}
+
+body:not(.dark-mode) .hljs-attribute {
+    color: #0000ff !important;
+}
+
+body:not(.dark-mode) .hljs-variable,
+body:not(.dark-mode) .hljs-template-variable,
+body:not(.dark-mode) .hljs-params {
+    color: #660e7a !important;
+    font-weight: bold;
+}
+
+body:not(.dark-mode) .hljs-class .hljs-title {
+    color: #000000 !important;
+    font-weight: bold;
+}
+
+body:not(.dark-mode) .hljs-function .hljs-title {
+    color: #000000 !important;
+    font-weight: bold;
+}
+
+body:not(.dark-mode) .hljs-built_in,
+body:not(.dark-mode) .hljs-builtin-name {
+    color: #30a0d0 !important;
+}
+
+body:not(.dark-mode) .hljs-meta,
+body:not(.dark-mode) .hljs-meta-keyword {
+    color: #9e880d !important;
+}
+
+body:not(.dark-mode) .hljs-meta-string {
+    color: #008000 !important;
+}
+
+body:not(.dark-mode) .hljs-deletion {
+    background: #ffcccc;
+}
+
+body:not(.dark-mode) .hljs-addition {
+    background: #ccffcc;
+}
+
+body:not(.dark-mode) .hljs-emphasis {
+    font-style: italic;
+}
+
+body:not(.dark-mode) .hljs-strong {
+    font-weight: bold;
+}
+
+body:not(.dark-mode) .hljs-doctag {
+    color: #000080 !important;
+    font-weight: bold;
+}
+
+body:not(.dark-mode) .hljs-selector-id,
+body:not(.dark-mode) .hljs-selector-class {
+    color: #660e7a !important;
+}
+
+body:not(.dark-mode) .hljs-symbol,
+body:not(.dark-mode) .hljs-bullet {
+    color: #0000ff !important;
+}
+
+body:not(.dark-mode) .hljs-link {
+    color: #0000ff !important;
+    text-decoration: underline;
+}
+
+/* Highlight.js Darcula Dark Theme for Dark Mode */
+body.dark-mode .hljs {
+    background: #2b2b2b !important;
+    color: #a9b7c6 !important;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+body.dark-mode .hljs-comment,
+body.dark-mode .hljs-quote {
+    color: #808080 !important;
+    font-style: italic;
+}
+
+body.dark-mode .hljs-keyword,
+body.dark-mode .hljs-selector-tag,
+body.dark-mode .hljs-literal {
+    color: #cc7832 !important;
+}
+
+body.dark-mode .hljs-string,
+body.dark-mode .hljs-regexp {
+    color: #6a8759 !important;
+}
+
+body.dark-mode .hljs-subst {
+    color: #a9b7c6 !important;
+}
+
+body.dark-mode .hljs-number {
+    color: #6897bb !important;
+}
+
+body.dark-mode .hljs-constant {
+    color: #9876aa !important;
+    font-style: italic;
+}
+
+body.dark-mode .hljs-tag {
+    color: #e8bf6a !important;
+}
+
+body.dark-mode .hljs-section,
+body.dark-mode .hljs-title {
+    color: #ffc66d !important;
+}
+
+body.dark-mode .hljs-type,
+body.dark-mode .hljs-class .hljs-title {
+    color: #a9b7c6 !important;
+}
+
+body.dark-mode .hljs-attribute {
+    color: #9876aa !important;
+    font-style: italic;
+}
+
+body.dark-mode .hljs-variable,
+body.dark-mode .hljs-template-variable {
+    color: #a9b7c6 !important;
+}
+
+body.dark-mode .hljs-params {
+    color: #a9b7c6 !important;
+}
+
+body.dark-mode .hljs-function .hljs-title {
+    color: #ffc66d !important;
+}
+
+body.dark-mode .hljs-built_in,
+body.dark-mode .hljs-builtin-name {
+    color: #8888c6 !important;
+}
+
+body.dark-mode .hljs-meta,
+body.dark-mode .hljs-meta-keyword {
+    color: #bbb529 !important;
+}
+
+body.dark-mode .hljs-meta-string {
+    color: #6a8759 !important;
+}
+
+body.dark-mode .hljs-deletion {
+    background: #484a4a;
+    color: #a9b7c6;
+}
+
+body.dark-mode .hljs-addition {
+    background: #294436;
+    color: #a9b7c6;
+}
+
+body.dark-mode .hljs-emphasis {
+    font-style: italic;
+}
+
+body.dark-mode .hljs-strong {
+    font-weight: bold;
+}
+
+body.dark-mode .hljs-link {
+    color: #287bde !important;
+    text-decoration: underline;
+}
+
+body.dark-mode .hljs-symbol,
+body.dark-mode .hljs-bullet {
+    color: #6897bb !important;
+}
+
+body.dark-mode .hljs-formula {
+    background: #2b2b2b;
+}
+
+body.dark-mode .hljs-doctag {
+    color: #e8bf6a !important;
+}
+
+body.dark-mode .hljs-selector-id,
+body.dark-mode .hljs-selector-class,
+body.dark-mode .hljs-selector-attr,
+body.dark-mode .hljs-selector-pseudo {
+    color: #ffc66d !important;
+}
+
+body.dark-mode .hljs-name {
+    color: #e8bf6a !important;
+}
+
+body.dark-mode .hljs-attr {
+    color: #bab429 !important;
+}
+
+body.dark-mode .hljs-property {
+    color: #9876aa !important;
+}
+
+/* Ensure code blocks use the highlight.js styling */
+.highlight pre {
+    padding: 0 !important;
+}
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 1em;
+    border-radius: 4px;
+}
+
+/* Override Sphinx's default code block styling to use Highlight.js */
+div.highlight {
+    background: transparent !important;
+    border: none !important;
+}
+
+body.dark-mode div.highlight pre {
+    background: transparent !important;
+}
+
+body:not(.dark-mode) div.highlight pre {
+    background: transparent !important;
+}

@@ -38,6 +38,18 @@ A comprehensive API documentation website built with Sphinx and Read the Docs th
 - Buttons positioned on the right side above each code block
 - One line of spacing above all code blocks
 
+### ✅ 7. Advanced Syntax Highlighting
+- **Highlight.js Integration**: Professional syntax highlighting for code blocks
+- **Darcula Light Theme**: IntelliJ-inspired color scheme for day mode
+- **Darcula Dark Theme**: JetBrains Darcula colors for night mode
+- **Automatic Theme Switching**: Syntax colors update when toggling day/night mode
+- **Multi-Language Support**: Supports all mainstream programming languages including:
+  - Python, JavaScript, TypeScript, Java, C++, C#, Go, Rust, Ruby, PHP
+  - Swift, Kotlin, Scala, Bash, SQL, JSON, YAML, XML, HTML, CSS
+  - Markdown, Dockerfile, HTTP, and more
+- **Automatic Language Detection**: Recognizes language from Sphinx code block directives
+- **Performance Optimized**: Fast loading via CDN with minimal overhead
+
 ## Project Structure
 
 ```

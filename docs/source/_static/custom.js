@@ -2,9 +2,124 @@
  * Theme and Language Management for Sphinx RTD Theme
  */
 
+// Syntax Highlighting Manager
+class SyntaxHighlighter {
+    constructor() {
+        this.highlightJsLoaded = false;
+        this.init();
+    }
+
+    init() {
+        this.loadHighlightJs();
+    }
+
+    loadHighlightJs() {
+        if (typeof hljs !== 'undefined') {
+            this.highlightJsLoaded = true;
+            this.applyHighlighting();
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
+        script.onload = () => {
+            this.highlightJsLoaded = true;
+            this.applyHighlighting();
+        };
+        document.head.appendChild(script);
+    }
+
+    detectLanguage(block) {
+        const parent = block.parentElement;
+        
+        if (parent) {
+            const classList = Array.from(parent.classList);
+            for (const className of classList) {
+                if (className.startsWith('highlight-')) {
+                    const lang = className.replace('highlight-', '');
+                    const langMap = {
+                        'python': 'python',
+                        'javascript': 'javascript',
+                        'js': 'javascript',
+                        'typescript': 'typescript',
+                        'ts': 'typescript',
+                        'java': 'java',
+                        'cpp': 'cpp',
+                        'c++': 'cpp',
+                        'c': 'c',
+                        'csharp': 'csharp',
+                        'cs': 'csharp',
+                        'go': 'go',
+                        'rust': 'rust',
+                        'ruby': 'ruby',
+                        'php': 'php',
+                        'swift': 'swift',
+                        'kotlin': 'kotlin',
+                        'scala': 'scala',
+                        'bash': 'bash',
+                        'sh': 'bash',
+                        'shell': 'bash',
+                        'sql': 'sql',
+                        'json': 'json',
+                        'xml': 'xml',
+                        'html': 'html',
+                        'css': 'css',
+                        'yaml': 'yaml',
+                        'yml': 'yaml',
+                        'markdown': 'markdown',
+                        'md': 'markdown',
+                        'dockerfile': 'dockerfile',
+                        'http': 'http',
+                        'default': null
+                    };
+                    return langMap[lang.toLowerCase()] || null;
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    applyHighlighting() {
+        if (!this.highlightJsLoaded || typeof hljs === 'undefined') {
+            return;
+        }
+
+        document.querySelectorAll('div.highlight pre').forEach((block) => {
+            if (!block.classList.contains('hljs')) {
+                const language = this.detectLanguage(block);
+                if (language) {
+                    block.classList.add('language-' + language);
+                }
+                hljs.highlightElement(block);
+            }
+        });
+    }
+
+    reapplyHighlighting() {
+        if (!this.highlightJsLoaded || typeof hljs === 'undefined') {
+            return;
+        }
+
+        document.querySelectorAll('div.highlight pre').forEach((block) => {
+            if (block.classList.contains('hljs')) {
+                block.classList.remove('hljs');
+                const classes = Array.from(block.classList).filter(c => c.startsWith('language-'));
+                classes.forEach(c => block.classList.remove(c));
+            }
+            const language = this.detectLanguage(block);
+            if (language) {
+                block.classList.add('language-' + language);
+            }
+            hljs.highlightElement(block);
+        });
+    }
+}
+
 // Theme management (Dark/Light mode)
 class ThemeManager {
-    constructor() {
+    constructor(syntaxHighlighter) {
+        this.syntaxHighlighter = syntaxHighlighter;
         this.isDark = localStorage.getItem('theme') === 'dark';
         this.init();
     }
@@ -19,6 +134,12 @@ class ThemeManager {
             document.body.classList.add('dark-mode');
         } else {
             document.body.classList.remove('dark-mode');
+        }
+        
+        if (this.syntaxHighlighter) {
+            setTimeout(() => {
+                this.syntaxHighlighter.reapplyHighlighting();
+            }, 100);
         }
     }
 
@@ -268,7 +389,8 @@ class CodeBlockEnhancer {
 
 // Initialization
 function initializeFeatures() {
-    new ThemeManager();
+    const syntaxHighlighter = new SyntaxHighlighter();
+    new ThemeManager(syntaxHighlighter);
     new LanguageSwitcher();
     new CodeBlockEnhancer();
 }
