@@ -66,15 +66,43 @@ class ThemeManager {
 class LanguageSwitcher {
     constructor() {
         this.currentLang = this.detectLanguage();
+        this.currentBuildDir = this.detectBuildDir();
+        this.currentPage = this.getCurrentPage();
         this.init();
     }
 
     detectLanguage() {
         const path = window.location.pathname;
-        if (path.includes('/html-en/') || path.includes('/en/') || path.includes('index_en.html')) {
+        if (path.includes('/html-en/') || path.includes('index_en.html')) {
             return 'en';
         }
         return 'zh';
+    }
+
+    detectBuildDir() {
+        const path = window.location.pathname;
+        if (path.includes('/html-en/')) {
+            return 'html-en';
+        }
+        if (path.includes('/html-zh/')) {
+            return 'html-zh';
+        }
+        // Default: try to detect from current directory
+        return 'html-zh';
+    }
+
+    getCurrentPage() {
+        const path = window.location.pathname;
+        // Extract just the filename or the last part of the path
+        const segments = path.split('/').filter(s => s);
+        if (segments.length === 0) {
+            return 'index.html';
+        }
+        const lastSegment = segments[segments.length - 1];
+        if (lastSegment.endsWith('.html')) {
+            return lastSegment;
+        }
+        return 'index.html';
     }
 
     init() {
@@ -95,7 +123,7 @@ class LanguageSwitcher {
 
         const label = document.createElement('label');
         label.textContent = this.currentLang === 'zh' ? '切换语言 / Language' : 'Language / 语言';
-        
+
         const select = document.createElement('select');
         select.id = 'language-select';
 
@@ -111,12 +139,12 @@ class LanguageSwitcher {
 
         select.appendChild(optionZh);
         select.appendChild(optionEn);
-        
+
         select.addEventListener('change', (e) => this.switchLanguage(e.target.value));
 
         switcherDiv.appendChild(label);
         switcherDiv.appendChild(select);
-        
+
         // Insert after the search box or home link
         sideNavSearch.appendChild(switcherDiv);
     }
@@ -127,43 +155,49 @@ class LanguageSwitcher {
         const currentPath = window.location.pathname;
         let newPath = currentPath;
 
+        // Determine the target build directory and page
         if (lang === 'zh') {
             // Switch from English to Chinese
-            if (newPath.includes('/html-en/')) {
-                newPath = newPath.replace('/html-en/', '/html-zh/');
-            }
+            newPath = currentPath.replace(/\/html-en\//g, '/html-zh/');
+            newPath = newPath.replace('index_en.html', 'index.html');
+            // If we're in a subpage, maintain the same page name
             if (newPath.includes('/en/')) {
-                newPath = newPath.replace('/en/', '/zh_CN/');
-            }
-            if (newPath.includes('index_en.html')) {
-                newPath = newPath.replace('index_en.html', 'index.html');
+                newPath = newPath.replace(/\/en\//g, '/zh_CN/');
             }
         } else {
             // Switch from Chinese to English
-            if (newPath.includes('/html-zh/')) {
-                newPath = newPath.replace('/html-zh/', '/html-en/');
-            }
+            newPath = currentPath.replace(/\/html-zh\//g, '/html-en/');
+            newPath = newPath.replace('index.html', 'index_en.html');
+            // If we're in a subpage, maintain the same page name
             if (newPath.includes('/zh_CN/')) {
-                newPath = newPath.replace('/zh_CN/', '/en/');
-            }
-            if (newPath.includes('index.html')) {
-                newPath = newPath.replace('index.html', 'index_en.html');
-            } else if (newPath.endsWith('/')) {
-                newPath += 'index_en.html';
+                newPath = newPath.replace(/\/zh_CN\//g, '/en/');
             }
         }
 
-        // Final fallback: if newPath is still the same, we might need a more aggressive replacement
+        // Handle edge case: if path ends with /, append the appropriate index
+        if (newPath.endsWith('/')) {
+            newPath += lang === 'zh' ? 'index.html' : 'index_en.html';
+        }
+
+        // Final fallback: if we couldn't determine the proper path, use default
         if (newPath === currentPath) {
-            if (lang === 'en') {
-                newPath = 'index_en.html';
-            } else {
-                newPath = 'index.html';
-            }
+            const buildPrefix = this.getBuildPrefix(lang);
+            const currentPageName = this.currentPage === 'index_en.html' ? 'index.html' : this.currentPage;
+            const targetPage = lang === 'en' ? currentPageName.replace('index.html', 'index_en.html') : currentPageName.replace('index_en.html', 'index.html');
+            newPath = buildPrefix + targetPage;
         }
 
         localStorage.setItem('preferred_lang', lang);
         window.location.href = newPath;
+    }
+
+    getBuildPrefix(lang) {
+        const currentPath = window.location.pathname;
+        // Find how many directories we are deep from the build directory
+        const depth = currentPath.split('/').length - (currentPath.includes('/html-') ? 4 : 2);
+        const prefix = '../'.repeat(Math.max(0, depth));
+        const buildDir = lang === 'zh' ? 'html-zh/' : 'html-en/';
+        return prefix + buildDir;
     }
 }
 
