@@ -154,20 +154,34 @@ class LanguageSwitcher {
         const currentPath = window.location.pathname;
         let newPath = currentPath;
 
-        // Detect if we're serving from parent build directory or from within a language directory
-        const servingFromBuildDir = currentPath.includes('/html-zh/') || currentPath.includes('/html-en/');
+        // Build paths based on target language
+        const buildDir = lang === 'zh' ? 'html-zh' : 'html-en';
+        const indexPage = lang === 'zh' ? 'index.html' : 'index_en.html';
+        const contentDir = lang === 'zh' ? 'zh_CN' : 'en';
 
-        if (servingFromBuildDir) {
-            // Serving from parent build directory (e.g., /build/)
-            // Paths look like: /html-zh/index.html or /html-en/index_en.html
+        // Replace build directory
+        newPath = newPath.replace(/html-zh|html-en/g, buildDir);
+
+        // Replace content directory
+        newPath = newPath.replace(/zh_CN|en/g, contentDir);
+
+        // Handle index page
+        if (newPath.includes('index.html') || newPath.includes('index_en.html')) {
             if (lang === 'zh') {
-                // Switch from English to Chinese
-                newPath = currentPath.replace(/\/html-en\//g, '/html-zh/');
                 newPath = newPath.replace('index_en.html', 'index.html');
-                // If we're in a subpage, maintain the same page name
-                if (newPath.includes('/en/')) {
-                    newPath = newPath.replace(/\/en\//g, '/zh_CN/');
-                }
+            } else {
+                newPath = newPath.replace('index.html', 'index_en.html');
+            }
+        }
+
+        // Handle trailing slash
+        if (newPath.endsWith('/')) {
+            newPath += indexPage;
+        }
+
+        localStorage.setItem('preferred_lang', lang);
+        window.location.href = newPath;
+    }
             } else {
                 // Switch from Chinese to English
                 newPath = currentPath.replace(/\/html-zh\//g, '/html-en/');
