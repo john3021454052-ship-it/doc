@@ -73,7 +73,7 @@ class LanguageSwitcher {
 
     detectLanguage() {
         const path = window.location.pathname;
-        if (path.includes('/html-en/') || path.includes('index_en.html')) {
+        if (path.includes('/html-en/') || path.includes('/en/') || path.includes('index_en.html')) {
             return 'en';
         }
         return 'zh';
@@ -87,8 +87,7 @@ class LanguageSwitcher {
         if (path.includes('/html-zh/')) {
             return 'html-zh';
         }
-        // Default: try to detect from current directory
-        return 'html-zh';
+        return null;
     }
 
     getCurrentPage() {
@@ -179,35 +178,17 @@ class LanguageSwitcher {
                 }
             }
         } else {
-            // Serving from within a language directory (e.g., html-zh/)
+            // Serving from a single build directory (e.g., build/html or build/html-zh)
             // Paths look like: /index.html or /zh_CN/introduction.html
-            // Need to use relative paths to sibling directory
-            const pathDepth = currentPath.split('/').filter(s => s).length;
-            const upLevels = '../'.repeat(pathDepth > 0 ? pathDepth : 0);
-
             if (lang === 'zh') {
                 // Switch from English to Chinese
-                // Replace en/ paths with zh_CN/ paths
-                if (currentPath.includes('/en/')) {
-                    newPath = currentPath.replace(/\/en\//g, '/zh_CN/');
-                    newPath = upLevels + '../html-zh' + newPath;
-                } else if (currentPath.includes('index_en.html')) {
-                    newPath = upLevels + '../html-zh/index.html';
-                } else {
-                    // Fallback: assume we're on a page that exists in both builds
-                    newPath = upLevels + '../html-zh' + currentPath;
-                }
+                newPath = currentPath.replace(/\/en\//g, '/zh_CN/');
+                newPath = newPath.replace('index_en.html', 'index.html');
             } else {
                 // Switch from Chinese to English
-                // Replace zh_CN/ paths with en/ paths
-                if (currentPath.includes('/zh_CN/')) {
-                    newPath = currentPath.replace(/\/zh_CN\//g, '/en/');
-                    newPath = upLevels + '../html-en' + newPath;
-                } else if (currentPath === '/index.html' || currentPath.endsWith('/index.html')) {
-                    newPath = upLevels + '../html-en/index_en.html';
-                } else {
-                    // Fallback: assume we're on a page that exists in both builds
-                    newPath = upLevels + '../html-en' + currentPath;
+                newPath = currentPath.replace(/\/zh_CN\//g, '/en/');
+                if (newPath === '/index.html' || newPath.endsWith('/index.html')) {
+                    newPath = newPath.replace('index.html', 'index_en.html');
                 }
             }
         }
