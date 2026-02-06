@@ -108,8 +108,6 @@ class LanguageSwitcher {
             // Switch to Chinese (html-zh directory)
             if (hasHtmlEn) {
                 newPath = newPath.replace('/html-en/', '/html-zh/');
-            } else if (!hasHtmlZh && this.currentLang === 'en') {
-                newPath = `/html-zh${newPath.startsWith('/') ? '' : '/'}${newPath}`;
             }
             newPath = newPath.replace('index_en.html', 'index.html');
             // Also replace /en/ with /zh_CN/ in the path
@@ -118,8 +116,6 @@ class LanguageSwitcher {
             // Switch to English (html-en directory)
             if (hasHtmlZh) {
                 newPath = newPath.replace('/html-zh/', '/html-en/');
-            } else if (!hasHtmlEn && this.currentLang === 'zh') {
-                newPath = `/html-en${newPath.startsWith('/') ? '' : '/'}${newPath}`;
             }
             newPath = newPath.replace('index.html', 'index_en.html');
             // Also replace /zh_CN/ with /en/ in the path

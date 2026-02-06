@@ -62,3 +62,13 @@ response = requests.get('https://api.example.com/api/v1/data',
                        params={'limit': 10, 'offset': 0})
 data = response.json()
 ```
+
+## Error Response
+
+When an error occurs, the API returns a standard error response:
+
+Error code: 404
+
+Message: File not found.
+
+Error code explanation: 404 - Nothing matches the given URI
