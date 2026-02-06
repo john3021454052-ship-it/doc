@@ -46,6 +46,9 @@ html_theme_options = {
     'titles_only': False,
 }
 
+pygments_style = 'default'
+pygments_dark_style = 'monokai'
+
 source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown',
