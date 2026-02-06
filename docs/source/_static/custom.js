@@ -558,17 +558,24 @@ class CodeBlockManager {
     }
 
     enhanceCodeBlocks() {
-        // 直接选择最外层的代码块容器（包含highlight-前缀的div）
+        // 选择 Sphinx 生成的代码块的最外层容器
         const codeBlocks = document.querySelectorAll('div[class*="highlight-"]');
         
-        codeBlocks.forEach((block) => {
-            if (block.dataset.enhanced) return;
+        codeBlocks.forEach((outerBlock) => {
+            if (outerBlock.dataset.enhanced) return;
             
-            const wrapper = new CodeBlockWrapper(block);
+            // 查找内层的 div.highlight（实际的代码块容器）
+            const innerHighlight = outerBlock.querySelector('div.highlight');
+            if (!innerHighlight) {
+                outerBlock.dataset.enhanced = 'true';
+                return;
+            }
+            
+            const wrapper = new CodeBlockWrapper(innerHighlight);
             wrapper.create();
             
-            this.wrappers.set(block, wrapper);
-            block.dataset.enhanced = 'true';
+            this.wrappers.set(innerHighlight, wrapper);
+            outerBlock.dataset.enhanced = 'true';
         });
     }
 }
