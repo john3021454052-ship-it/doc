@@ -147,58 +147,72 @@ body.dark-mode .language-switcher-sidebar select {
 .code-block-wrapper {
     position: relative;
     margin: 2em 0;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border-radius: 10px;
     overflow: hidden;
     border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.code-block-wrapper:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
 }
 
 body.dark-mode .code-block-wrapper {
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .code-block-wrapper:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
 }
 
 .code-block-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 15px;
-    background-color: #ebedef;
+    padding: 10px 16px;
+    background-color: #f8f9fa;
     border-bottom: 1px solid var(--border-color);
     z-index: 10;
 }
 
 body.dark-mode .code-block-controls {
-    background-color: #323232;
+    background-color: #2d2d2d;
 }
 
 .code-lang {
     font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-    font-size: 12px;
-    font-weight: bold;
-    color: #666;
+    font-size: 11px;
+    font-weight: 700;
+    color: #6c757d;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
+    background: rgba(0,0,0,0.05);
+    padding: 2px 10px;
+    border-radius: 20px;
 }
 
 body.dark-mode .code-lang {
-    color: #aaa;
+    color: #adb5bd;
+    background: rgba(255,255,255,0.1);
 }
 
 .mac-dots {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .dot {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     display: inline-block;
 }
 
-.dot.red { background-color: #ff5f56; }
-.dot.yellow { background-color: #ffbd2e; }
-.dot.green { background-color: #27c93f; }
+.dot.red { background-color: #ff5f56; box-shadow: 0 0 5px rgba(255,95,86,0.3); }
+.dot.yellow { background-color: #ffbd2e; box-shadow: 0 0 5px rgba(255,189,46,0.3); }
+.dot.green { background-color: #27c93f; box-shadow: 0 0 5px rgba(39,201,63,0.3); }
 
 .code-block-buttons {
     display: flex;
@@ -206,58 +220,95 @@ body.dark-mode .code-lang {
 }
 
 .code-block-buttons button {
-    padding: 4px 12px;
-    background-color: #2980b9;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background-color: transparent;
+    color: #6c757d;
+    border: 1px solid transparent;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 11px;
     transition: all 0.2s;
-    opacity: 0.8;
 }
 
 .code-block-buttons button:hover {
-    background-color: #3498db;
-    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #2980b9;
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
 body.dark-mode .code-block-buttons button {
-    background-color: #4da6ff;
+    color: #adb5bd;
 }
 
 body.dark-mode .code-block-buttons button:hover {
-    background-color: #66b3ff;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #4da6ff;
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .code-block-buttons button.copied {
-    background-color: #27ae60 !important;
+    color: #28a745 !important;
 }
 
 /* Line numbers styling */
 .highlight pre.line-numbers {
     counter-reset: line;
+    padding-left: 0 !important;
 }
 
 .highlight pre.line-numbers .line {
     counter-increment: line;
+    display: block;
+    padding-left: 1em;
 }
 
 .highlight pre.line-numbers .line::before {
     content: counter(line);
     display: inline-block;
-    width: 3em;
+    width: 2.5em;
     padding-right: 1em;
     margin-right: 1em;
     text-align: right;
-    color: #999;
-    border-right: 1px solid #ddd;
+    color: #ced4da;
+    border-right: 1px solid #dee2e6;
     user-select: none;
+    font-size: 0.9em;
 }
 
 body.dark-mode .highlight pre.line-numbers .line::before {
-    color: #6e6e6e;
+    color: #495057;
     border-right-color: #3e3e42;
+}
+
+/* Custom Scrollbar for code blocks */
+.hljs::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.hljs::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.hljs::-webkit-scrollbar-thumb {
+    background: #dee2e6;
+    border-radius: 10px;
+}
+
+body.dark-mode .hljs::-webkit-scrollbar-thumb {
+    background: #495057;
+}
+
+.hljs::-webkit-scrollbar-thumb:hover {
+    background: #ced4da;
+}
+
+body.dark-mode .hljs::-webkit-scrollbar-thumb:hover {
+    background: #6c757d;
 }
 
 /* Add spacing before code blocks - reduced since wrapper has margin */
@@ -269,6 +320,7 @@ body.dark-mode .highlight pre.line-numbers .line::before {
 .highlight-default {
     margin-top: 0 !important;
 }
+
 
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {
