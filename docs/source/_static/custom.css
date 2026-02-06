@@ -167,6 +167,55 @@ body.dark-mode .code-block-wrapper:hover {
     box-shadow: 0 8px 30px rgba(0,0,0,0.4);
 }
 
+/* Code block header - reserved line for edit button */
+.code-block-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid var(--border-color);
+    min-height: 36px;
+    box-sizing: border-box;
+}
+
+body.dark-mode .code-block-header {
+    background-color: #2d2d2d;
+    border-bottom-color: #3e3e42;
+}
+
+/* Edit button styles */
+.edit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background-color: transparent;
+    color: #6c757d;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edit-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #2980b9;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .edit-btn {
+    color: #adb5bd;
+}
+
+body.dark-mode .edit-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #4da6ff;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
 .code-block-controls {
     display: flex;
     justify-content: space-between;
@@ -252,6 +301,19 @@ body.dark-mode .code-block-buttons button:hover {
 
 .code-block-buttons button.copied {
     color: #28a745 !important;
+}
+
+/* Copy button visibility - hidden by default, shown on click */
+.copy-btn {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.copy-btn.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* Line numbers styling */
