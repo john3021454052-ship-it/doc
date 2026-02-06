@@ -340,23 +340,28 @@ class CodeBlockEnhancer {
                 const lang = className.replace('highlight-', '');
                 if (lang !== 'default') {
                     langSpan.textContent = lang.toUpperCase();
+                } else {
+                    langSpan.textContent = 'CODE';
                 }
                 break;
             }
         }
+        if (!langSpan.textContent) langSpan.textContent = 'CODE';
         controlsDiv.appendChild(langSpan);
         
         const buttonsDiv = document.createElement('div');
         buttonsDiv.className = 'code-block-buttons';
         
         const copyBtn = document.createElement('button');
-        copyBtn.textContent = 'Copy';
         copyBtn.className = 'copy-btn';
+        copyBtn.title = 'Copy Code';
+        copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
         copyBtn.addEventListener('click', () => this.copyCode(codeBlock, copyBtn));
         
         const lineBtn = document.createElement('button');
-        lineBtn.textContent = 'Line';
         lineBtn.className = 'line-btn';
+        lineBtn.title = 'Toggle Line Numbers';
+        lineBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>';
         lineBtn.addEventListener('click', () => this.toggleLineNumbers(codeBlock, lineBtn));
         
         buttonsDiv.appendChild(copyBtn);
@@ -369,14 +374,26 @@ class CodeBlockEnhancer {
     copyCode(codeBlock, button) {
         const pre = codeBlock.querySelector('pre');
         if (!pre) return;
-        const code = pre.textContent;
+        
+        // Use textContent but handle line numbers if they are present
+        let code = '';
+        if (pre.classList.contains('line-numbers')) {
+            const lines = pre.querySelectorAll('.line');
+            if (lines.length > 0) {
+                code = Array.from(lines).map(line => line.textContent).join('\n');
+            } else {
+                code = pre.textContent;
+            }
+        } else {
+            code = pre.textContent;
+        }
         
         navigator.clipboard.writeText(code).then(() => {
-            const originalText = button.textContent;
-            button.textContent = 'Copied!';
+            const originalIcon = button.innerHTML;
+            button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
             button.classList.add('copied');
             setTimeout(() => {
-                button.textContent = originalText;
+                button.innerHTML = originalIcon;
                 button.classList.remove('copied');
             }, 2000);
         });
@@ -388,14 +405,13 @@ class CodeBlockEnhancer {
 
         if (pre.classList.contains('line-numbers')) {
             pre.classList.remove('line-numbers');
-            const lines = pre.querySelectorAll('.line');
-            lines.forEach(line => {
-                const text = line.textContent;
-                line.replaceWith(document.createTextNode(text + '\n'));
-            });
-            // This is a bit of a hack, might need better logic to perfectly restore
-            location.reload(); 
+            if (pre.dataset.originalHtml) {
+                pre.innerHTML = pre.dataset.originalHtml;
+            }
         } else {
+            if (!pre.dataset.originalHtml) {
+                pre.dataset.originalHtml = pre.innerHTML;
+            }
             pre.classList.add('line-numbers');
             const code = pre.textContent;
             const lines = code.split('\n');
@@ -411,6 +427,7 @@ class CodeBlockEnhancer {
         }
     }
 }
+
 
 // Initialization
 function initializeFeatures() {
