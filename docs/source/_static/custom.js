@@ -338,7 +338,20 @@ class CodeBlockEditButton extends ButtonComponent {
     }
 
     handleClick() {
-        console.log('Edit button clicked for code block');
+        const pre = this.codeBlock.querySelector('pre');
+        if (!pre) return;
+
+        const isEditing = pre.getAttribute('contenteditable') === 'true';
+        if (isEditing) {
+            pre.setAttribute('contenteditable', 'false');
+            this.button.classList.remove('active');
+            this.codeBlock.classList.remove('is-editing');
+        } else {
+            pre.setAttribute('contenteditable', 'true');
+            pre.focus();
+            this.button.classList.add('active');
+            this.codeBlock.classList.add('is-editing');
+        }
     }
 }
 
@@ -405,15 +418,19 @@ class CodeBlockHeader {
     constructor(codeBlock) {
         this.codeBlock = codeBlock;
         this.copyButton = null;
+        this.editButton = null;
     }
 
     create() {
         const headerDiv = document.createElement('div');
         headerDiv.className = 'code-block-header';
-        
+
+        this.editButton = new CodeBlockEditButton(this.codeBlock);
+        headerDiv.appendChild(this.editButton.create());
+
         this.copyButton = new CodeBlockCopyButton(this.codeBlock);
         headerDiv.appendChild(this.copyButton.create());
-        
+
         return headerDiv;
     }
 
