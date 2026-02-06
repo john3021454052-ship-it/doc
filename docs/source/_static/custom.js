@@ -292,49 +292,131 @@ class LanguageSwitcher {
     }
 }
 
-// Code block enhancements (Copy & Line Numbers)
-class CodeBlockEnhancer {
-    constructor() {
-        this.init();
+// Code Block Edit Button Component
+class CodeBlockEditButton {
+    constructor(codeBlock) {
+        this.codeBlock = codeBlock;
+        this.button = null;
     }
 
-    init() {
-        document.addEventListener('DOMContentLoaded', () => {
-            this.enhanceCodeBlocks();
-        });
+    create() {
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.title = 'Edit Code';
+        editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+        editBtn.addEventListener('click', (e) => this.handleClick(e));
+        this.button = editBtn;
+        return editBtn;
     }
 
-    enhanceCodeBlocks() {
-        const codeBlocks = document.querySelectorAll('.highlight');
+    handleClick(e) {
+        e.stopPropagation();
+        console.log('Edit button clicked for code block');
+    }
+}
+
+// Code Block Copy Button Component
+class CodeBlockCopyButton {
+    constructor(codeBlock) {
+        this.codeBlock = codeBlock;
+        this.button = null;
+        this.isVisible = false;
+    }
+
+    create() {
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn hidden';
+        copyBtn.title = 'Copy Code';
+        copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+        copyBtn.addEventListener('click', (e) => this.handleClick(e));
+        this.button = copyBtn;
+        return copyBtn;
+    }
+
+    show() {
+        if (this.button) {
+            this.button.classList.remove('hidden');
+            this.isVisible = true;
+        }
+    }
+
+    hide() {
+        if (this.button) {
+            this.button.classList.add('hidden');
+            this.isVisible = false;
+        }
+    }
+
+    handleClick(e) {
+        e.stopPropagation();
+        this.copyCode();
+    }
+
+    copyCode() {
+        const pre = this.codeBlock.querySelector('pre');
+        if (!pre) return;
         
-        codeBlocks.forEach((block) => {
-            if (block.querySelector('.code-block-controls')) return;
-            
-            const wrapper = document.createElement('div');
-            wrapper.className = 'code-block-wrapper';
-            
-            block.parentNode.insertBefore(wrapper, block);
-            wrapper.appendChild(block);
-            
-            const controls = this.createControls(block);
-            wrapper.insertBefore(controls, block);
+        let code = '';
+        if (pre.classList.contains('line-numbers')) {
+            const lines = pre.querySelectorAll('.line');
+            if (lines.length > 0) {
+                code = Array.from(lines).map(line => line.textContent).join('\n');
+            } else {
+                code = pre.textContent;
+            }
+        } else {
+            code = pre.textContent;
+        }
+        
+        navigator.clipboard.writeText(code).then(() => {
+            const originalIcon = this.button.innerHTML;
+            this.button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            this.button.classList.add('copied');
+            setTimeout(() => {
+                this.button.innerHTML = originalIcon;
+                this.button.classList.remove('copied');
+            }, 2000);
         });
     }
+}
 
-    createControls(codeBlock) {
+// Code Block Header Component
+class CodeBlockHeader {
+    constructor(codeBlock) {
+        this.codeBlock = codeBlock;
+        this.editButton = new CodeBlockEditButton(codeBlock);
+    }
+
+    create() {
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'code-block-header';
+        
+        const editBtn = this.editButton.create();
+        headerDiv.appendChild(editBtn);
+        
+        return headerDiv;
+    }
+}
+
+// Code Block Controls Component
+class CodeBlockControls {
+    constructor(codeBlock) {
+        this.codeBlock = codeBlock;
+        this.copyButton = new CodeBlockCopyButton(codeBlock);
+    }
+
+    create() {
         const controlsDiv = document.createElement('div');
         controlsDiv.className = 'code-block-controls';
         
-        // Add Mac-style dots
         const dotsDiv = document.createElement('div');
         dotsDiv.className = 'mac-dots';
         dotsDiv.innerHTML = '<span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>';
         controlsDiv.appendChild(dotsDiv);
 
-        // Add language name
         const langSpan = document.createElement('span');
         langSpan.className = 'code-lang';
-        const classList = Array.from(codeBlock.classList);
+        const classList = Array.from(this.codeBlock.classList);
         for (const className of classList) {
             if (className.startsWith('highlight-')) {
                 const lang = className.replace('highlight-', '');
@@ -352,55 +434,73 @@ class CodeBlockEnhancer {
         const buttonsDiv = document.createElement('div');
         buttonsDiv.className = 'code-block-buttons';
         
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'copy-btn';
-        copyBtn.title = 'Copy Code';
-        copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-        copyBtn.addEventListener('click', () => this.copyCode(codeBlock, copyBtn));
-        
-        const lineBtn = document.createElement('button');
-        lineBtn.className = 'line-btn';
-        lineBtn.title = 'Toggle Line Numbers';
-        lineBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>';
-        lineBtn.addEventListener('click', () => this.toggleLineNumbers(codeBlock, lineBtn));
-        
+        const copyBtn = this.copyButton.create();
         buttonsDiv.appendChild(copyBtn);
-        buttonsDiv.appendChild(lineBtn);
         controlsDiv.appendChild(buttonsDiv);
         
         return controlsDiv;
     }
 
-    copyCode(codeBlock, button) {
-        const pre = codeBlock.querySelector('pre');
-        if (!pre) return;
-        
-        // Use textContent but handle line numbers if they are present
-        let code = '';
-        if (pre.classList.contains('line-numbers')) {
-            const lines = pre.querySelectorAll('.line');
-            if (lines.length > 0) {
-                code = Array.from(lines).map(line => line.textContent).join('\n');
-            } else {
-                code = pre.textContent;
-            }
-        } else {
-            code = pre.textContent;
-        }
-        
-        navigator.clipboard.writeText(code).then(() => {
-            const originalIcon = button.innerHTML;
-            button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-            button.classList.add('copied');
-            setTimeout(() => {
-                button.innerHTML = originalIcon;
-                button.classList.remove('copied');
-            }, 2000);
-        });
+    showCopyButton() {
+        this.copyButton.show();
     }
 
-    toggleLineNumbers(codeBlock, button) {
-        const pre = codeBlock.querySelector('pre');
+    hideCopyButton() {
+        this.copyButton.hide();
+    }
+}
+
+// Code Block Wrapper Component
+class CodeBlockWrapper {
+    constructor(codeBlock) {
+        this.codeBlock = codeBlock;
+        this.wrapper = null;
+        this.header = null;
+        this.controls = null;
+    }
+
+    create() {
+        this.wrapper = document.createElement('div');
+        this.wrapper.className = 'code-block-wrapper';
+        
+        this.codeBlock.parentNode.insertBefore(this.wrapper, this.codeBlock);
+        
+        this.header = new CodeBlockHeader(this.codeBlock);
+        this.wrapper.appendChild(this.header.create());
+        
+        this.controls = new CodeBlockControls(this.codeBlock);
+        this.wrapper.appendChild(this.controls.create());
+        
+        this.wrapper.appendChild(this.codeBlock);
+        
+        this.attachEvents();
+        
+        return this.wrapper;
+    }
+
+    attachEvents() {
+        this.wrapper.addEventListener('click', (e) => {
+            if (!e.target.closest('.edit-btn') && !e.target.closest('.copy-btn')) {
+                this.controls.showCopyButton();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!this.wrapper.contains(e.target)) {
+                this.controls.hideCopyButton();
+            }
+        });
+    }
+}
+
+// Code Block Line Numbers Component
+class CodeBlockLineNumbers {
+    constructor(codeBlock) {
+        this.codeBlock = codeBlock;
+    }
+
+    toggle() {
+        const pre = this.codeBlock.querySelector('pre');
         if (!pre) return;
 
         if (pre.classList.contains('line-numbers')) {
@@ -428,13 +528,41 @@ class CodeBlockEnhancer {
     }
 }
 
+// Code Block Manager - Orchestrates all components
+class CodeBlockManager {
+    constructor() {
+        this.wrappers = new Map();
+        this.init();
+    }
+
+    init() {
+        document.addEventListener('DOMContentLoaded', () => {
+            this.enhanceCodeBlocks();
+        });
+    }
+
+    enhanceCodeBlocks() {
+        const codeBlocks = document.querySelectorAll('.highlight');
+        
+        codeBlocks.forEach((block) => {
+            if (block.dataset.enhanced) return;
+            
+            const wrapper = new CodeBlockWrapper(block);
+            wrapper.create();
+            
+            this.wrappers.set(block, wrapper);
+            block.dataset.enhanced = 'true';
+        });
+    }
+}
+
 
 // Initialization
 function initializeFeatures() {
     const syntaxHighlighter = new SyntaxHighlighter();
     new ThemeManager(syntaxHighlighter);
     new LanguageSwitcher();
-    new CodeBlockEnhancer();
+    new CodeBlockManager();
 }
 
 if (document.readyState === 'loading') {
