@@ -11,3 +11,12 @@ API 文档
    zh_CN/quickstart
    zh_CN/api_reference
    zh_CN/examples
+
+.. toctree::
+   :maxdepth: 2
+   :caption: English Documentation:
+
+   en/introduction
+   en/quickstart
+   en/api_reference
+   en/examples
