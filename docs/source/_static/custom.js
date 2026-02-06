@@ -400,29 +400,40 @@ class CodeBlockCopyButton extends ButtonComponent {
     }
 }
 
-// Header Component - Top reserved line for edit button
+// Header Component - Top reserved line for copy button
 class CodeBlockHeader {
     constructor(codeBlock) {
         this.codeBlock = codeBlock;
-        this.editButton = null;
+        this.copyButton = null;
     }
 
     create() {
         const headerDiv = document.createElement('div');
         headerDiv.className = 'code-block-header';
         
-        this.editButton = new CodeBlockEditButton(this.codeBlock);
-        headerDiv.appendChild(this.editButton.create());
+        this.copyButton = new CodeBlockCopyButton(this.codeBlock);
+        headerDiv.appendChild(this.copyButton.create());
         
         return headerDiv;
     }
+
+    showCopyButton() {
+        if (this.copyButton) {
+            this.copyButton.show();
+        }
+    }
+
+    hideCopyButton() {
+        if (this.copyButton) {
+            this.copyButton.hide();
+        }
+    }
 }
 
-// Controls Component - Contains mac dots, language, and copy button
+// Controls Component - Contains mac dots and language only
 class CodeBlockControls {
     constructor(codeBlock) {
         this.codeBlock = codeBlock;
-        this.copyButton = null;
     }
 
     create() {
@@ -451,26 +462,7 @@ class CodeBlockControls {
         if (!langSpan.textContent) langSpan.textContent = 'CODE';
         controlsDiv.appendChild(langSpan);
         
-        const buttonsDiv = document.createElement('div');
-        buttonsDiv.className = 'code-block-buttons';
-        
-        this.copyButton = new CodeBlockCopyButton(this.codeBlock);
-        buttonsDiv.appendChild(this.copyButton.create());
-        controlsDiv.appendChild(buttonsDiv);
-        
         return controlsDiv;
-    }
-
-    showCopyButton() {
-        if (this.copyButton) {
-            this.copyButton.show();
-        }
-    }
-
-    hideCopyButton() {
-        if (this.copyButton) {
-            this.copyButton.hide();
-        }
     }
 }
 
@@ -504,14 +496,14 @@ class CodeBlockWrapper {
 
     attachEvents() {
         this.wrapper.addEventListener('click', (e) => {
-            if (!e.target.closest('.edit-btn') && !e.target.closest('.copy-btn')) {
-                this.controls.showCopyButton();
+            if (!e.target.closest('.copy-btn')) {
+                this.header.showCopyButton();
             }
         });
 
         document.addEventListener('click', (e) => {
             if (!this.wrapper.contains(e.target)) {
-                this.controls.hideCopyButton();
+                this.header.hideCopyButton();
             }
         });
     }
