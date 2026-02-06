@@ -292,45 +292,67 @@ class LanguageSwitcher {
     }
 }
 
-// Code Block Edit Button Component
-class CodeBlockEditButton {
-    constructor(codeBlock) {
-        this.codeBlock = codeBlock;
+// Button Component - Base class for all buttons
+class ButtonComponent {
+    constructor(options = {}) {
+        this.options = {
+            className: '',
+            title: '',
+            icon: '',
+            ...options
+        };
         this.button = null;
     }
 
     create() {
-        const editBtn = document.createElement('button');
-        editBtn.className = 'edit-btn';
-        editBtn.title = 'Edit Code';
-        editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
-        editBtn.addEventListener('click', (e) => this.handleClick(e));
-        this.button = editBtn;
-        return editBtn;
+        const btn = document.createElement('button');
+        btn.className = this.options.className;
+        btn.title = this.options.title;
+        btn.innerHTML = this.options.icon;
+        btn.setAttribute('type', 'button');
+        this.button = btn;
+        this.attachEvents();
+        return btn;
     }
 
-    handleClick(e) {
-        e.stopPropagation();
+    attachEvents() {
+        this.button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.handleClick();
+        });
+    }
+
+    handleClick() {
+    }
+}
+
+// Edit Button Component
+class CodeBlockEditButton extends ButtonComponent {
+    constructor(codeBlock) {
+        super({
+            className: 'edit-btn',
+            title: 'Edit Code',
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>'
+        });
+        this.codeBlock = codeBlock;
+    }
+
+    handleClick() {
         console.log('Edit button clicked for code block');
     }
 }
 
-// Code Block Copy Button Component
-class CodeBlockCopyButton {
+// Copy Button Component
+class CodeBlockCopyButton extends ButtonComponent {
     constructor(codeBlock) {
+        super({
+            className: 'copy-btn',
+            title: 'Copy Code',
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>'
+        });
         this.codeBlock = codeBlock;
-        this.button = null;
         this.isVisible = false;
-    }
-
-    create() {
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'copy-btn hidden';
-        copyBtn.title = 'Copy Code';
-        copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-        copyBtn.addEventListener('click', (e) => this.handleClick(e));
-        this.button = copyBtn;
-        return copyBtn;
+        this.originalIcon = this.options.icon;
     }
 
     show() {
@@ -347,8 +369,7 @@ class CodeBlockCopyButton {
         }
     }
 
-    handleClick(e) {
-        e.stopPropagation();
+    handleClick() {
         this.copyCode();
     }
 
@@ -369,40 +390,39 @@ class CodeBlockCopyButton {
         }
         
         navigator.clipboard.writeText(code).then(() => {
-            const originalIcon = this.button.innerHTML;
             this.button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
             this.button.classList.add('copied');
             setTimeout(() => {
-                this.button.innerHTML = originalIcon;
+                this.button.innerHTML = this.originalIcon;
                 this.button.classList.remove('copied');
             }, 2000);
         });
     }
 }
 
-// Code Block Header Component
+// Header Component - Top reserved line for edit button
 class CodeBlockHeader {
     constructor(codeBlock) {
         this.codeBlock = codeBlock;
-        this.editButton = new CodeBlockEditButton(codeBlock);
+        this.editButton = null;
     }
 
     create() {
         const headerDiv = document.createElement('div');
         headerDiv.className = 'code-block-header';
         
-        const editBtn = this.editButton.create();
-        headerDiv.appendChild(editBtn);
+        this.editButton = new CodeBlockEditButton(this.codeBlock);
+        headerDiv.appendChild(this.editButton.create());
         
         return headerDiv;
     }
 }
 
-// Code Block Controls Component
+// Controls Component - Contains mac dots, language, and copy button
 class CodeBlockControls {
     constructor(codeBlock) {
         this.codeBlock = codeBlock;
-        this.copyButton = new CodeBlockCopyButton(codeBlock);
+        this.copyButton = null;
     }
 
     create() {
@@ -434,23 +454,27 @@ class CodeBlockControls {
         const buttonsDiv = document.createElement('div');
         buttonsDiv.className = 'code-block-buttons';
         
-        const copyBtn = this.copyButton.create();
-        buttonsDiv.appendChild(copyBtn);
+        this.copyButton = new CodeBlockCopyButton(this.codeBlock);
+        buttonsDiv.appendChild(this.copyButton.create());
         controlsDiv.appendChild(buttonsDiv);
         
         return controlsDiv;
     }
 
     showCopyButton() {
-        this.copyButton.show();
+        if (this.copyButton) {
+            this.copyButton.show();
+        }
     }
 
     hideCopyButton() {
-        this.copyButton.hide();
+        if (this.copyButton) {
+            this.copyButton.hide();
+        }
     }
 }
 
-// Code Block Wrapper Component
+// Wrapper Component - Orchestrates header, controls, and code block
 class CodeBlockWrapper {
     constructor(codeBlock) {
         this.codeBlock = codeBlock;
