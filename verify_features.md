@@ -95,9 +95,10 @@ make html-en
 make all
 
 # View documentation
-cd build/html
+cd build
 python -m http.server 8000
-# Then open http://localhost:8000 in browser
+# Then open http://localhost:8000/html-zh/index.html (Chinese)
+# or http://localhost:8000/html-en/index_en.html (English) in browser
 ```
 
 ## File Structure Verification

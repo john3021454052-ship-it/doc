@@ -155,36 +155,66 @@ class LanguageSwitcher {
         const currentPath = window.location.pathname;
         let newPath = currentPath;
 
-        // Determine the target build directory and page
-        if (lang === 'zh') {
-            // Switch from English to Chinese
-            newPath = currentPath.replace(/\/html-en\//g, '/html-zh/');
-            newPath = newPath.replace('index_en.html', 'index.html');
-            // If we're in a subpage, maintain the same page name
-            if (newPath.includes('/en/')) {
-                newPath = newPath.replace(/\/en\//g, '/zh_CN/');
+        // Detect if we're serving from parent build directory or from within a language directory
+        const servingFromBuildDir = currentPath.includes('/html-zh/') || currentPath.includes('/html-en/');
+
+        if (servingFromBuildDir) {
+            // Serving from parent build directory (e.g., /build/)
+            // Paths look like: /html-zh/index.html or /html-en/index_en.html
+            if (lang === 'zh') {
+                // Switch from English to Chinese
+                newPath = currentPath.replace(/\/html-en\//g, '/html-zh/');
+                newPath = newPath.replace('index_en.html', 'index.html');
+                // If we're in a subpage, maintain the same page name
+                if (newPath.includes('/en/')) {
+                    newPath = newPath.replace(/\/en\//g, '/zh_CN/');
+                }
+            } else {
+                // Switch from Chinese to English
+                newPath = currentPath.replace(/\/html-zh\//g, '/html-en/');
+                newPath = newPath.replace('index.html', 'index_en.html');
+                // If we're in a subpage, maintain the same page name
+                if (newPath.includes('/zh_CN/')) {
+                    newPath = newPath.replace(/\/zh_CN\//g, '/en/');
+                }
             }
         } else {
-            // Switch from Chinese to English
-            newPath = currentPath.replace(/\/html-zh\//g, '/html-en/');
-            newPath = newPath.replace('index.html', 'index_en.html');
-            // If we're in a subpage, maintain the same page name
-            if (newPath.includes('/zh_CN/')) {
-                newPath = newPath.replace(/\/zh_CN\//g, '/en/');
+            // Serving from within a language directory (e.g., html-zh/)
+            // Paths look like: /index.html or /zh_CN/introduction.html
+            // Need to use relative paths to sibling directory
+            const pathDepth = currentPath.split('/').filter(s => s).length;
+            const upLevels = '../'.repeat(pathDepth > 0 ? pathDepth : 0);
+
+            if (lang === 'zh') {
+                // Switch from English to Chinese
+                // Replace en/ paths with zh_CN/ paths
+                if (currentPath.includes('/en/')) {
+                    newPath = currentPath.replace(/\/en\//g, '/zh_CN/');
+                    newPath = upLevels + '../html-zh' + newPath;
+                } else if (currentPath.includes('index_en.html')) {
+                    newPath = upLevels + '../html-zh/index.html';
+                } else {
+                    // Fallback: assume we're on a page that exists in both builds
+                    newPath = upLevels + '../html-zh' + currentPath;
+                }
+            } else {
+                // Switch from Chinese to English
+                // Replace zh_CN/ paths with en/ paths
+                if (currentPath.includes('/zh_CN/')) {
+                    newPath = currentPath.replace(/\/zh_CN\//g, '/en/');
+                    newPath = upLevels + '../html-en' + newPath;
+                } else if (currentPath === '/index.html' || currentPath.endsWith('/index.html')) {
+                    newPath = upLevels + '../html-en/index_en.html';
+                } else {
+                    // Fallback: assume we're on a page that exists in both builds
+                    newPath = upLevels + '../html-en' + currentPath;
+                }
             }
         }
 
         // Handle edge case: if path ends with /, append the appropriate index
         if (newPath.endsWith('/')) {
             newPath += lang === 'zh' ? 'index.html' : 'index_en.html';
-        }
-
-        // Final fallback: if we couldn't determine the proper path, use default
-        if (newPath === currentPath) {
-            const buildPrefix = this.getBuildPrefix(lang);
-            const currentPageName = this.currentPage === 'index_en.html' ? 'index.html' : this.currentPage;
-            const targetPage = lang === 'en' ? currentPageName.replace('index.html', 'index_en.html') : currentPageName.replace('index_en.html', 'index.html');
-            newPath = buildPrefix + targetPage;
         }
 
         localStorage.setItem('preferred_lang', lang);
