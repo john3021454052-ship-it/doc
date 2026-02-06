@@ -1,0 +1,241 @@
+// Theme management
+class ThemeManager {
+    constructor() {
+        this.isDark = localStorage.getItem('theme') === 'dark';
+        this.init();
+    }
+
+    init() {
+        this.applyTheme();
+        this.createToggleButton();
+    }
+
+    applyTheme() {
+        if (this.isDark) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    }
+
+    toggle() {
+        this.isDark = !this.isDark;
+        localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
+        this.applyTheme();
+        this.updateButtonText();
+    }
+
+    createToggleButton() {
+        const navSide = document.querySelector('.wy-nav-side');
+        if (!navSide) return;
+
+        const toggleDiv = document.createElement('div');
+        toggleDiv.className = 'theme-toggle';
+        
+        const button = document.createElement('button');
+        button.id = 'theme-toggle-btn';
+        this.updateButtonText(button);
+        
+        button.addEventListener('click', () => this.toggle());
+        
+        toggleDiv.appendChild(button);
+        navSide.appendChild(toggleDiv);
+    }
+
+    updateButtonText(button) {
+        const btn = button || document.getElementById('theme-toggle-btn');
+        if (btn) {
+            btn.textContent = this.isDark ? '☀️ 白天模式 / Day Mode' : '🌙 夜间模式 / Night Mode';
+        }
+    }
+}
+
+// Language switcher
+class LanguageSwitcher {
+    constructor() {
+        this.currentLang = this.detectLanguage();
+        this.init();
+    }
+
+    detectLanguage() {
+        const path = window.location.pathname;
+        if (path.includes('index_en.html') || path.includes('/en/')) {
+            return 'en';
+        }
+        return 'zh';
+    }
+
+    init() {
+        this.createSwitcher();
+    }
+
+    createSwitcher() {
+        const navContent = document.querySelector('.wy-nav-content');
+        if (!navContent) return;
+
+        const switcherDiv = document.createElement('div');
+        switcherDiv.className = 'language-switcher';
+        
+        const select = document.createElement('select');
+        select.id = 'language-select';
+        
+        const optionZh = document.createElement('option');
+        optionZh.value = 'zh';
+        optionZh.textContent = '中文';
+        
+        const optionEn = document.createElement('option');
+        optionEn.value = 'en';
+        optionEn.textContent = 'English';
+        
+        select.appendChild(optionZh);
+        select.appendChild(optionEn);
+        select.value = this.currentLang;
+        
+        select.addEventListener('change', (e) => this.switchLanguage(e.target.value));
+        
+        switcherDiv.appendChild(select);
+        navContent.insertBefore(switcherDiv, navContent.firstChild);
+    }
+
+    switchLanguage(lang) {
+        const currentPath = window.location.pathname;
+        let newPath;
+
+        if (lang === 'zh') {
+            // Switch to Chinese
+            if (currentPath.includes('index_en.html')) {
+                newPath = currentPath.replace('index_en.html', 'index.html');
+            } else if (currentPath.includes('/en/')) {
+                newPath = currentPath.replace('/en/', '/zh_CN/');
+            } else {
+                return;
+            }
+        } else {
+            // Switch to English
+            if (currentPath.includes('index.html') && !currentPath.includes('index_en.html')) {
+                newPath = currentPath.replace('index.html', 'index_en.html');
+            } else if (currentPath.includes('/zh_CN/')) {
+                newPath = currentPath.replace('/zh_CN/', '/en/');
+            } else {
+                return;
+            }
+        }
+
+        window.location.href = newPath;
+    }
+}
+
+// Code block enhancements
+class CodeBlockEnhancer {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        document.addEventListener('DOMContentLoaded', () => {
+            this.enhanceCodeBlocks();
+        });
+    }
+
+    enhanceCodeBlocks() {
+        const codeBlocks = document.querySelectorAll('.highlight');
+        
+        codeBlocks.forEach((block, index) => {
+            if (block.querySelector('.code-block-controls')) return;
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'code-block-wrapper';
+            
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+            
+            const controls = this.createControls(block, index);
+            wrapper.insertBefore(controls, block);
+        });
+    }
+
+    createControls(codeBlock, index) {
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'code-block-controls';
+        
+        // Copy button
+        const copyBtn = document.createElement('button');
+        copyBtn.textContent = 'Copy';
+        copyBtn.className = 'copy-btn';
+        copyBtn.addEventListener('click', () => this.copyCode(codeBlock, copyBtn));
+        
+        // Line numbers button
+        const lineBtn = document.createElement('button');
+        lineBtn.textContent = 'Line';
+        lineBtn.className = 'line-btn';
+        lineBtn.addEventListener('click', () => this.toggleLineNumbers(codeBlock, lineBtn));
+        
+        controlsDiv.appendChild(copyBtn);
+        controlsDiv.appendChild(lineBtn);
+        
+        return controlsDiv;
+    }
+
+    copyCode(codeBlock, button) {
+        const pre = codeBlock.querySelector('pre');
+        if (!pre) return;
+
+        const code = pre.textContent;
+        
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            button.classList.add('copied');
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('copied');
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            button.textContent = 'Failed';
+            setTimeout(() => {
+                button.textContent = 'Copy';
+            }, 2000);
+        });
+    }
+
+    toggleLineNumbers(codeBlock, button) {
+        const pre = codeBlock.querySelector('pre');
+        if (!pre) return;
+
+        if (pre.classList.contains('line-numbers')) {
+            // Remove line numbers
+            pre.classList.remove('line-numbers');
+            const lines = pre.querySelectorAll('.line');
+            lines.forEach(line => {
+                const span = line;
+                span.outerHTML = span.innerHTML;
+            });
+        } else {
+            // Add line numbers
+            pre.classList.add('line-numbers');
+            const code = pre.innerHTML;
+            const lines = code.split('\n');
+            
+            const wrappedLines = lines.map(line => {
+                return `<span class="line">${line}</span>`;
+            }).join('\n');
+            
+            pre.innerHTML = wrappedLines;
+        }
+    }
+}
+
+// Initialize all features when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFeatures);
+} else {
+    initializeFeatures();
+}
+
+function initializeFeatures() {
+    new ThemeManager();
+    new LanguageSwitcher();
+    new CodeBlockEnhancer();
+}

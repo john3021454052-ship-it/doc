@@ -1,0 +1,224 @@
+/* Light mode (default) */
+:root {
+    --bg-color: #fcfcfc;
+    --text-color: #404040;
+    --sidebar-bg: #f9f9f9;
+    --link-color: #2980b9;
+    --code-bg: #f5f5f5;
+    --border-color: #e1e4e5;
+}
+
+/* Dark mode */
+body.dark-mode {
+    --bg-color: #1e1e1e;
+    --text-color: #d4d4d4;
+    --sidebar-bg: #252526;
+    --link-color: #4da6ff;
+    --code-bg: #2d2d30;
+    --border-color: #3e3e42;
+}
+
+body.dark-mode .wy-nav-side {
+    background: var(--sidebar-bg);
+}
+
+body.dark-mode .wy-side-nav-search {
+    background-color: #2d2d30;
+}
+
+body.dark-mode .wy-menu-vertical a {
+    color: #d4d4d4;
+}
+
+body.dark-mode .wy-menu-vertical a:hover {
+    background-color: #37373d;
+    color: #ffffff;
+}
+
+body.dark-mode .wy-nav-content-wrap {
+    background: var(--bg-color);
+}
+
+body.dark-mode .wy-nav-content {
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+body.dark-mode .rst-content {
+    color: var(--text-color);
+}
+
+body.dark-mode .rst-content .highlighted {
+    background: #3a3d41;
+}
+
+body.dark-mode div.highlight {
+    background-color: var(--code-bg);
+}
+
+body.dark-mode .highlight pre {
+    background-color: var(--code-bg);
+    color: #d4d4d4;
+}
+
+body.dark-mode code {
+    background-color: var(--code-bg);
+    color: #ce9178;
+    border: 1px solid var(--border-color);
+}
+
+body.dark-mode .wy-side-nav-search input[type="text"] {
+    background-color: #3c3c3c;
+    color: #d4d4d4;
+    border-color: var(--border-color);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    position: absolute;
+    bottom: 80px;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    text-align: center;
+}
+
+.theme-toggle button {
+    width: 90%;
+    padding: 10px 15px;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.theme-toggle button:hover {
+    background-color: #3498db;
+}
+
+body.dark-mode .theme-toggle button {
+    background-color: #4da6ff;
+}
+
+body.dark-mode .theme-toggle button:hover {
+    background-color: #66b3ff;
+}
+
+/* Language switcher */
+.language-switcher {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.language-switcher select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: white;
+    color: var(--text-color);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+body.dark-mode .language-switcher select {
+    background-color: #3c3c3c;
+    color: #d4d4d4;
+    border-color: var(--border-color);
+}
+
+/* Code block enhancements */
+.code-block-wrapper {
+    position: relative;
+    margin: 1em 0;
+}
+
+.code-block-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 8px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.code-block-controls button {
+    padding: 4px 12px;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s;
+}
+
+.code-block-controls button:hover {
+    background-color: #3498db;
+}
+
+body.dark-mode .code-block-controls button {
+    background-color: #4da6ff;
+}
+
+body.dark-mode .code-block-controls button:hover {
+    background-color: #66b3ff;
+}
+
+.code-block-controls button.copied {
+    background-color: #27ae60;
+}
+
+/* Line numbers styling */
+.highlight pre.line-numbers {
+    counter-reset: line;
+}
+
+.highlight pre.line-numbers .line {
+    counter-increment: line;
+}
+
+.highlight pre.line-numbers .line::before {
+    content: counter(line);
+    display: inline-block;
+    width: 3em;
+    padding-right: 1em;
+    margin-right: 1em;
+    text-align: right;
+    color: #999;
+    border-right: 1px solid #ddd;
+    user-select: none;
+}
+
+body.dark-mode .highlight pre.line-numbers .line::before {
+    color: #6e6e6e;
+    border-right-color: #3e3e42;
+}
+
+/* Add spacing before code blocks */
+.highlight-python,
+.highlight-javascript,
+.highlight-bash,
+.highlight-json,
+.highlight-http,
+.highlight-default {
+    margin-top: 2em !important;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .language-switcher {
+        right: 10px;
+    }
+    
+    .theme-toggle {
+        bottom: 60px;
+    }
+}
