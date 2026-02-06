@@ -115,13 +115,19 @@ After building, open the generated HTML files in your browser:
 - Chinese version: `docs/build/html-zh/index.html`
 - English version: `docs/build/html-en/index_en.html`
 
-For local development, you can use Python's built-in HTTP server:
+For local development with language switching support, you should serve from the parent build directory:
 ```bash
-cd docs/build/html-zh
+cd docs/build
 python -m http.server 8000
 ```
 
-Then visit `http://localhost:8000` in your browser.
+Then visit:
+- Chinese: `http://localhost:8000/html-zh/index.html`
+- English: `http://localhost:8000/html-en/index_en.html`
+
+**Note**: The language switcher works in both serving modes:
+- When served from `build/`: Uses absolute paths (recommended for full functionality)
+- When served from `build/html-zh/` or `build/html-en/`: Uses relative paths to navigate to the sibling directory
 
 **Important Notes**:
 - Each language version is built into a separate directory (`html-zh` and `html-en`)

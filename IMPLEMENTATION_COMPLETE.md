@@ -308,10 +308,11 @@ make html-en
 cd docs
 make clean
 
-# View documentation locally
-cd docs/build/html
+# View documentation locally (recommended for language switching)
+cd docs/build
 python -m http.server 8000
-# Open http://localhost:8000 in browser
+# Open http://localhost:8000/html-zh/index.html (Chinese) or
+# http://localhost:8000/html-en/index_en.html (English) in browser
 ```
 
 ---

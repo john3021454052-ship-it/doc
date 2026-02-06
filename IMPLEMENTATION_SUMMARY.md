@@ -173,9 +173,10 @@ sphinx-build -b html source build/html -D master_doc=index_en  # English version
 
 ### Viewing Documentation
 ```bash
-cd docs/build/html
+cd docs/build
 python -m http.server 8000
-# Open http://localhost:8000 in browser
+# Open http://localhost:8000/html-zh/index.html (Chinese)
+# or http://localhost:8000/html-en/index_en.html (English) in browser
 ```
 
 ## Feature Testing Checklist

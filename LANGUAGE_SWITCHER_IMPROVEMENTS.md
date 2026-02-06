@@ -76,17 +76,21 @@ To test the improved language switcher:
    make all
    ```
 
-2. Start a local server:
+2. Start a local server from the parent build directory (recommended):
    ```bash
-   cd build/html-zh
+   cd build
    python -m http.server 8000
    ```
 
-3. Open `http://localhost:8000` in your browser
+3. Open `http://localhost:8000/html-zh/index.html` in your browser
 
 4. Use the language switcher dropdown in the sidebar to switch between Chinese and English
 
 5. **Verify that**: The directory tree (sidebar navigation) changes to reflect the selected language
+
+**Note**: The language switcher now supports two serving modes:
+- Serving from `build/` directory: Uses absolute paths (recommended)
+- Serving from `build/html-zh/` or `build/html-en/`: Uses relative paths to navigate to sibling directories
 
 ## Files Modified
 
