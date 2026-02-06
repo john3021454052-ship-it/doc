@@ -24,7 +24,7 @@ A comprehensive API documentation website built with Sphinx and Read the Docs th
 - Dropdown menu for language selection (Chinese/English)
 - Located in the sidebar below the search box
 - Seamless switching between language versions
-- **Directory tree (sidebar navigation) changes when switching languages** - each language version has its own independent navigation structure generated from its respective index file
+- **Directory tree (sidebar navigation) only shows documents for the currently selected language** - Chinese version displays only Chinese docs, English version displays only English docs
 
 ### ✅ 5. Multilingual Content Structure
 - Separate documentation trees for Chinese and English
@@ -133,7 +133,7 @@ Then visit:
 - Each language version is built into a separate directory (`html-zh` and `html-en`)
 - The language switcher in the sidebar will navigate between these directories
 - When you switch languages, the entire page reloads from the other build directory
-- **The directory tree (sidebar navigation) will change** - this is expected behavior as each language has its own TOC generated from its respective index file
+- **The directory tree (sidebar navigation) only shows documents for the currently selected language** - Chinese version displays only Chinese docs, English version displays only English docs
 - Current page context is maintained (e.g., if you're on `introduction.html` in Chinese, switching to English will take you to `introduction.html` in English)
 
 ## Architecture
