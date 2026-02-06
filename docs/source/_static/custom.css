@@ -146,44 +146,92 @@ body.dark-mode .language-switcher-sidebar select {
 /* Code block enhancements */
 .code-block-wrapper {
     position: relative;
-    margin: 1em 0;
+    margin: 2em 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+body.dark-mode .code-block-wrapper {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 .code-block-controls {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 8px;
     display: flex;
-    gap: 8px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #ebedef;
+    border-bottom: 1px solid var(--border-color);
     z-index: 10;
 }
 
-.code-block-controls button {
+body.dark-mode .code-block-controls {
+    background-color: #323232;
+}
+
+.code-lang {
+    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+body.dark-mode .code-lang {
+    color: #aaa;
+}
+
+.mac-dots {
+    display: flex;
+    gap: 8px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot.red { background-color: #ff5f56; }
+.dot.yellow { background-color: #ffbd2e; }
+.dot.green { background-color: #27c93f; }
+
+.code-block-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.code-block-buttons button {
     padding: 4px 12px;
     background-color: #2980b9;
     color: white;
     border: none;
-    border-radius: 3px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
-    transition: background-color 0.2s;
+    font-size: 11px;
+    transition: all 0.2s;
+    opacity: 0.8;
 }
 
-.code-block-controls button:hover {
+.code-block-buttons button:hover {
     background-color: #3498db;
+    opacity: 1;
 }
 
-body.dark-mode .code-block-controls button {
+body.dark-mode .code-block-buttons button {
     background-color: #4da6ff;
 }
 
-body.dark-mode .code-block-controls button:hover {
+body.dark-mode .code-block-buttons button:hover {
     background-color: #66b3ff;
 }
 
-.code-block-controls button.copied {
-    background-color: #27ae60;
+.code-block-buttons button.copied {
+    background-color: #27ae60 !important;
 }
 
 /* Line numbers styling */
@@ -212,14 +260,14 @@ body.dark-mode .highlight pre.line-numbers .line::before {
     border-right-color: #3e3e42;
 }
 
-/* Add spacing before code blocks */
+/* Add spacing before code blocks - reduced since wrapper has margin */
 .highlight-python,
 .highlight-javascript,
 .highlight-bash,
 .highlight-json,
 .highlight-http,
 .highlight-default {
-    margin-top: 2em !important;
+    margin-top: 0 !important;
 }
 
 /* Responsive adjustments */
@@ -485,8 +533,10 @@ body.dark-mode .hljs-property {
 .hljs {
     display: block;
     overflow-x: auto;
-    padding: 1em;
-    border-radius: 4px;
+    padding: 1.5em;
+    border-radius: 0;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 /* Override Sphinx's default code block styling to use Highlight.js */
