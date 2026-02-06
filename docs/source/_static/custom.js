@@ -325,6 +325,30 @@ class CodeBlockEnhancer {
         const controlsDiv = document.createElement('div');
         controlsDiv.className = 'code-block-controls';
         
+        // Add Mac-style dots
+        const dotsDiv = document.createElement('div');
+        dotsDiv.className = 'mac-dots';
+        dotsDiv.innerHTML = '<span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>';
+        controlsDiv.appendChild(dotsDiv);
+
+        // Add language name
+        const langSpan = document.createElement('span');
+        langSpan.className = 'code-lang';
+        const classList = Array.from(codeBlock.classList);
+        for (const className of classList) {
+            if (className.startsWith('highlight-')) {
+                const lang = className.replace('highlight-', '');
+                if (lang !== 'default') {
+                    langSpan.textContent = lang.toUpperCase();
+                }
+                break;
+            }
+        }
+        controlsDiv.appendChild(langSpan);
+        
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.className = 'code-block-buttons';
+        
         const copyBtn = document.createElement('button');
         copyBtn.textContent = 'Copy';
         copyBtn.className = 'copy-btn';
@@ -335,8 +359,9 @@ class CodeBlockEnhancer {
         lineBtn.className = 'line-btn';
         lineBtn.addEventListener('click', () => this.toggleLineNumbers(codeBlock, lineBtn));
         
-        controlsDiv.appendChild(copyBtn);
-        controlsDiv.appendChild(lineBtn);
+        buttonsDiv.appendChild(copyBtn);
+        buttonsDiv.appendChild(lineBtn);
+        controlsDiv.appendChild(buttonsDiv);
         
         return controlsDiv;
     }
