@@ -75,25 +75,20 @@ body.dark-mode .wy-side-nav-search input[type="text"] {
 
 /* Theme toggle button */
 .theme-toggle {
-    position: absolute;
-    bottom: 80px;
-    left: 0;
-    width: 100%;
-    padding: 10px;
-    background: transparent;
-    border: none;
+    margin-top: 20px;
+    padding: 0 10px;
     text-align: center;
 }
 
 .theme-toggle button {
-    width: 90%;
-    padding: 10px 15px;
+    width: 100%;
+    padding: 8px 15px;
     background-color: #2980b9;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     transition: background-color 0.3s;
 }
 
@@ -109,28 +104,43 @@ body.dark-mode .theme-toggle button:hover {
     background-color: #66b3ff;
 }
 
-/* Language switcher */
-.language-switcher {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    z-index: 1000;
+/* Language switcher in sidebar */
+.language-switcher-sidebar {
+    margin: 15px 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
 }
 
-.language-switcher select {
-    padding: 8px 12px;
-    border: 1px solid var(--border-color);
+body.dark-mode .language-switcher-sidebar {
+    background: rgba(255,255,255,0.05);
+}
+
+.language-switcher-sidebar label {
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.language-switcher-sidebar select {
+    width: 100%;
+    padding: 6px;
     border-radius: 4px;
     background-color: white;
-    color: var(--text-color);
-    font-size: 14px;
+    color: #333;
+    border: 1px solid var(--border-color);
+    font-size: 13px;
     cursor: pointer;
 }
 
-body.dark-mode .language-switcher select {
+body.dark-mode .language-switcher-sidebar select {
     background-color: #3c3c3c;
     color: #d4d4d4;
-    border-color: var(--border-color);
 }
 
 /* Code block enhancements */
@@ -214,11 +224,7 @@ body.dark-mode .highlight pre.line-numbers .line::before {
 
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {
-    .language-switcher {
-        right: 10px;
-    }
-    
     .theme-toggle {
-        bottom: 60px;
+        margin-top: 10px;
     }
 }

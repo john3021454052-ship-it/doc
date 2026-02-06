@@ -1,4 +1,8 @@
-// Theme management
+/**
+ * Theme and Language Management for Sphinx RTD Theme
+ */
+
+// Theme management (Dark/Light mode)
 class ThemeManager {
     constructor() {
         this.isDark = localStorage.getItem('theme') === 'dark';
@@ -29,6 +33,14 @@ class ThemeManager {
         const navSide = document.querySelector('.wy-nav-side');
         if (!navSide) return;
 
+        // Create container for buttons in sidebar
+        let sidebarControls = document.querySelector('.sidebar-controls');
+        if (!sidebarControls) {
+            sidebarControls = document.createElement('div');
+            sidebarControls.className = 'sidebar-controls';
+            navSide.appendChild(sidebarControls);
+        }
+
         const toggleDiv = document.createElement('div');
         toggleDiv.className = 'theme-toggle';
         
@@ -39,18 +51,18 @@ class ThemeManager {
         button.addEventListener('click', () => this.toggle());
         
         toggleDiv.appendChild(button);
-        navSide.appendChild(toggleDiv);
+        sidebarControls.appendChild(toggleDiv);
     }
 
     updateButtonText(button) {
         const btn = button || document.getElementById('theme-toggle-btn');
         if (btn) {
-            btn.textContent = this.isDark ? '☀️ 白天模式 / Day Mode' : '🌙 夜间模式 / Night Mode';
+            btn.textContent = this.isDark ? '☀️ Day Mode' : '🌙 Night Mode';
         }
     }
 }
 
-// Language switcher
+// Language switcher logic
 class LanguageSwitcher {
     constructor() {
         this.currentLang = this.detectLanguage();
@@ -59,7 +71,6 @@ class LanguageSwitcher {
 
     detectLanguage() {
         const path = window.location.pathname;
-        // Check if we're in the English build or English content path
         if (path.includes('/html-en/') || path.includes('/en/') || path.includes('index_en.html')) {
             return 'en';
         }
@@ -68,70 +79,95 @@ class LanguageSwitcher {
 
     init() {
         this.createSwitcher();
+        this.persistPreference();
+    }
+
+    persistPreference() {
+        localStorage.setItem('preferred_lang', this.currentLang);
     }
 
     createSwitcher() {
-        const navContent = document.querySelector('.wy-nav-content');
-        if (!navContent) return;
+        const sideNavSearch = document.querySelector('.wy-side-nav-search');
+        if (!sideNavSearch) return;
 
         const switcherDiv = document.createElement('div');
-        switcherDiv.className = 'language-switcher';
+        switcherDiv.className = 'language-switcher-sidebar';
 
+        const label = document.createElement('label');
+        label.textContent = this.currentLang === 'zh' ? '切换语言 / Language' : 'Language / 语言';
+        
         const select = document.createElement('select');
         select.id = 'language-select';
 
         const optionZh = document.createElement('option');
         optionZh.value = 'zh';
-        optionZh.textContent = '中文';
+        optionZh.textContent = '简体中文';
+        optionZh.selected = this.currentLang === 'zh';
 
         const optionEn = document.createElement('option');
         optionEn.value = 'en';
         optionEn.textContent = 'English';
+        optionEn.selected = this.currentLang === 'en';
 
         select.appendChild(optionZh);
         select.appendChild(optionEn);
-        select.value = this.currentLang;
-
+        
         select.addEventListener('change', (e) => this.switchLanguage(e.target.value));
 
+        switcherDiv.appendChild(label);
         switcherDiv.appendChild(select);
-        navContent.insertBefore(switcherDiv, navContent.firstChild);
+        
+        // Insert after the search box or home link
+        sideNavSearch.appendChild(switcherDiv);
     }
 
     switchLanguage(lang) {
+        if (lang === this.currentLang) return;
+
         const currentPath = window.location.pathname;
-        const hasHtmlEn = currentPath.includes('/html-en/');
-        const hasHtmlZh = currentPath.includes('/html-zh/');
         let newPath = currentPath;
 
         if (lang === 'zh') {
-            // Switch to Chinese (html-zh directory)
-            if (hasHtmlEn) {
+            // Switch from English to Chinese
+            if (newPath.includes('/html-en/')) {
                 newPath = newPath.replace('/html-en/', '/html-zh/');
             }
-            newPath = newPath.replace('index_en.html', 'index.html');
-            // Also replace /en/ with /zh_CN/ in the path
-            newPath = newPath.replace(/\/en\//, '/zh_CN/');
+            if (newPath.includes('/en/')) {
+                newPath = newPath.replace('/en/', '/zh_CN/');
+            }
+            if (newPath.includes('index_en.html')) {
+                newPath = newPath.replace('index_en.html', 'index.html');
+            }
         } else {
-            // Switch to English (html-en directory)
-            if (hasHtmlZh) {
+            // Switch from Chinese to English
+            if (newPath.includes('/html-zh/')) {
                 newPath = newPath.replace('/html-zh/', '/html-en/');
             }
-            newPath = newPath.replace('index.html', 'index_en.html');
-            // Also replace /zh_CN/ with /en/ in the path
-            newPath = newPath.replace(/\/zh_CN\//, '/en/');
+            if (newPath.includes('/zh_CN/')) {
+                newPath = newPath.replace('/zh_CN/', '/en/');
+            }
+            if (newPath.includes('index.html')) {
+                newPath = newPath.replace('index.html', 'index_en.html');
+            } else if (newPath.endsWith('/')) {
+                newPath += 'index_en.html';
+            }
         }
 
-        // If the path hasn't changed, we're likely already on the correct language version
+        // Final fallback: if newPath is still the same, we might need a more aggressive replacement
         if (newPath === currentPath) {
-            return;
+            if (lang === 'en') {
+                newPath = 'index_en.html';
+            } else {
+                newPath = 'index.html';
+            }
         }
 
+        localStorage.setItem('preferred_lang', lang);
         window.location.href = newPath;
     }
 }
 
-// Code block enhancements
+// Code block enhancements (Copy & Line Numbers)
 class CodeBlockEnhancer {
     constructor() {
         this.init();
@@ -146,7 +182,7 @@ class CodeBlockEnhancer {
     enhanceCodeBlocks() {
         const codeBlocks = document.querySelectorAll('.highlight');
         
-        codeBlocks.forEach((block, index) => {
+        codeBlocks.forEach((block) => {
             if (block.querySelector('.code-block-controls')) return;
             
             const wrapper = document.createElement('div');
@@ -155,22 +191,20 @@ class CodeBlockEnhancer {
             block.parentNode.insertBefore(wrapper, block);
             wrapper.appendChild(block);
             
-            const controls = this.createControls(block, index);
+            const controls = this.createControls(block);
             wrapper.insertBefore(controls, block);
         });
     }
 
-    createControls(codeBlock, index) {
+    createControls(codeBlock) {
         const controlsDiv = document.createElement('div');
         controlsDiv.className = 'code-block-controls';
         
-        // Copy button
         const copyBtn = document.createElement('button');
         copyBtn.textContent = 'Copy';
         copyBtn.className = 'copy-btn';
         copyBtn.addEventListener('click', () => this.copyCode(codeBlock, copyBtn));
         
-        // Line numbers button
         const lineBtn = document.createElement('button');
         lineBtn.textContent = 'Line';
         lineBtn.className = 'line-btn';
@@ -185,23 +219,15 @@ class CodeBlockEnhancer {
     copyCode(codeBlock, button) {
         const pre = codeBlock.querySelector('pre');
         if (!pre) return;
-
         const code = pre.textContent;
         
         navigator.clipboard.writeText(code).then(() => {
             const originalText = button.textContent;
             button.textContent = 'Copied!';
             button.classList.add('copied');
-            
             setTimeout(() => {
                 button.textContent = originalText;
                 button.classList.remove('copied');
-            }, 2000);
-        }).catch(err => {
-            console.error('Failed to copy:', err);
-            button.textContent = 'Failed';
-            setTimeout(() => {
-                button.textContent = 'Copy';
             }, 2000);
         });
     }
@@ -211,7 +237,6 @@ class CodeBlockEnhancer {
         if (!pre) return;
 
         if (pre.classList.contains('line-numbers')) {
-            // Remove line numbers
             pre.classList.remove('line-numbers');
             const lines = pre.querySelectorAll('.line');
             lines.forEach(line => {
@@ -219,29 +244,24 @@ class CodeBlockEnhancer {
                 span.outerHTML = span.innerHTML;
             });
         } else {
-            // Add line numbers
             pre.classList.add('line-numbers');
             const code = pre.innerHTML;
             const lines = code.split('\n');
-            
-            const wrappedLines = lines.map(line => {
-                return `<span class="line">${line}</span>`;
-            }).join('\n');
-            
+            const wrappedLines = lines.map(line => `<span class="line">${line}</span>`).join('\n');
             pre.innerHTML = wrappedLines;
         }
     }
 }
 
-// Initialize all features when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeFeatures);
-} else {
-    initializeFeatures();
-}
-
+// Initialization
 function initializeFeatures() {
     new ThemeManager();
     new LanguageSwitcher();
     new CodeBlockEnhancer();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFeatures);
+} else {
+    initializeFeatures();
 }
