@@ -405,8 +405,9 @@ class CodeBlockHeader {
 
 // Controls Component - Contains mac dots and language only
 class CodeBlockControls {
-    constructor(codeBlock) {
+    constructor(codeBlock, outerBlock) {
         this.codeBlock = codeBlock;
+        this.outerBlock = outerBlock;
     }
 
     create() {
@@ -420,19 +421,11 @@ class CodeBlockControls {
 
         const langSpan = document.createElement('span');
         langSpan.className = 'code-lang';
-        const classList = Array.from(this.codeBlock.classList);
-        for (const className of classList) {
-            if (className.startsWith('highlight-')) {
-                const lang = className.replace('highlight-', '');
-                if (lang !== 'default') {
-                    langSpan.textContent = lang.toUpperCase();
-                } else {
-                    langSpan.textContent = 'CODE';
-                }
-                break;
-            }
-        }
-        if (!langSpan.textContent) langSpan.textContent = 'CODE';
+        
+        // 从内层代码块的data属性获取语言类型
+        const lang = this.codeBlock.dataset.language || 'CODE';
+        langSpan.textContent = lang.toUpperCase();
+        
         controlsDiv.appendChild(langSpan);
         
         return controlsDiv;
@@ -441,8 +434,9 @@ class CodeBlockControls {
 
 // Wrapper Component - Orchestrates header, controls, and code block
 class CodeBlockWrapper {
-    constructor(codeBlock) {
+    constructor(codeBlock, outerBlock) {
         this.codeBlock = codeBlock;
+        this.outerBlock = outerBlock;
         this.wrapper = null;
         this.header = null;
         this.controls = null;
@@ -457,7 +451,7 @@ class CodeBlockWrapper {
         this.header = new CodeBlockHeader(this.codeBlock);
         this.wrapper.appendChild(this.header.create());
 
-        this.controls = new CodeBlockControls(this.codeBlock);
+        this.controls = new CodeBlockControls(this.codeBlock, this.outerBlock);
         this.wrapper.appendChild(this.controls.create());
 
         this.wrapper.appendChild(this.codeBlock);
@@ -528,7 +522,13 @@ class CodeBlockManager {
                 return;
             }
             
-            const wrapper = new CodeBlockWrapper(innerHighlight);
+            // 从外层容器获取语言类型
+            const langClass = Array.from(outerBlock.classList).find(cls => cls.startsWith('highlight-'));
+            if (langClass) {
+                innerHighlight.dataset.language = langClass.replace('highlight-', '');
+            }
+            
+            const wrapper = new CodeBlockWrapper(innerHighlight, outerBlock);
             wrapper.create();
             
             this.wrappers.set(innerHighlight, wrapper);
