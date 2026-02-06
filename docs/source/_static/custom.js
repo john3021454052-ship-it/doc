@@ -346,27 +346,12 @@ class CodeBlockEditButton extends ButtonComponent {
 class CodeBlockCopyButton extends ButtonComponent {
     constructor(codeBlock) {
         super({
-            className: 'copy-btn hidden',
+            className: 'copy-btn',
             title: 'Copy Code',
             icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>'
         });
         this.codeBlock = codeBlock;
-        this.isVisible = false;
         this.originalIcon = this.options.icon;
-    }
-
-    show() {
-        if (this.button) {
-            this.button.classList.remove('hidden');
-            this.isVisible = true;
-        }
-    }
-
-    hide() {
-        if (this.button) {
-            this.button.classList.add('hidden');
-            this.isVisible = false;
-        }
     }
 
     handleClick() {
@@ -410,23 +395,11 @@ class CodeBlockHeader {
     create() {
         const headerDiv = document.createElement('div');
         headerDiv.className = 'code-block-header';
-        
+
         this.copyButton = new CodeBlockCopyButton(this.codeBlock);
         headerDiv.appendChild(this.copyButton.create());
-        
+
         return headerDiv;
-    }
-
-    showCopyButton() {
-        if (this.copyButton) {
-            this.copyButton.show();
-        }
-    }
-
-    hideCopyButton() {
-        if (this.copyButton) {
-            this.copyButton.hide();
-        }
     }
 }
 
@@ -478,34 +451,18 @@ class CodeBlockWrapper {
     create() {
         this.wrapper = document.createElement('div');
         this.wrapper.className = 'code-block-wrapper';
-        
+
         this.codeBlock.parentNode.insertBefore(this.wrapper, this.codeBlock);
-        
+
         this.header = new CodeBlockHeader(this.codeBlock);
         this.wrapper.appendChild(this.header.create());
-        
+
         this.controls = new CodeBlockControls(this.codeBlock);
         this.wrapper.appendChild(this.controls.create());
-        
+
         this.wrapper.appendChild(this.codeBlock);
-        
-        this.attachEvents();
-        
+
         return this.wrapper;
-    }
-
-    attachEvents() {
-        this.wrapper.addEventListener('click', (e) => {
-            if (!e.target.closest('.copy-btn')) {
-                this.header.showCopyButton();
-            }
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!this.wrapper.contains(e.target)) {
-                this.header.hideCopyButton();
-            }
-        });
     }
 }
 

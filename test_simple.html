@@ -82,36 +82,36 @@
     </div>
     
     <script>
-        // 简化的测试代码
+        // 简化的测试代码 - Copy按钮默认可见
         document.addEventListener('DOMContentLoaded', function() {
             console.log('页面加载完成，开始查找代码块...');
-            
+
             const codeBlocks = document.querySelectorAll('[class*="highlight"]');
             console.log('找到', codeBlocks.length, '个代码块元素');
-            
+
             codeBlocks.forEach((block, index) => {
                 console.log('处理代码块', index, ':', block.className);
-                
+
                 // 跳过内层的highlight div，只处理最外层的容器
-                if (block.classList.contains('highlight') && block.parentElement && 
+                if (block.classList.contains('highlight') && block.parentElement &&
                     block.parentElement.classList.contains('highlight')) {
                     console.log('跳过内层highlight div');
                     return;
                 }
-                
+
                 console.log('为代码块创建包装器:', block.className);
-                
+
                 // 创建包装器
                 const wrapper = document.createElement('div');
                 wrapper.className = 'code-block-wrapper';
-                
+
                 // 创建header
                 const headerDiv = document.createElement('div');
                 headerDiv.className = 'code-block-header';
-                
-                // 创建copy按钮
+
+                // 创建copy按钮 - 默认可见
                 const copyBtn = document.createElement('button');
-                copyBtn.className = 'copy-btn hidden';
+                copyBtn.className = 'copy-btn';
                 copyBtn.title = 'Copy Code';
                 copyBtn.innerHTML = '📋';
                 copyBtn.onclick = function() {
@@ -127,30 +127,17 @@
                         });
                     }
                 };
-                
+
                 headerDiv.appendChild(copyBtn);
-                
+
                 // 重构DOM
                 block.parentNode.insertBefore(wrapper, block);
                 wrapper.appendChild(headerDiv);
                 wrapper.appendChild(block);
-                
+
                 // 标记为已处理
                 block.dataset.enhanced = 'true';
-                
-                // 添加点击事件显示copy按钮
-                wrapper.addEventListener('click', function(e) {
-                    if (!e.target.closest('.copy-btn')) {
-                        copyBtn.classList.remove('hidden');
-                    }
-                });
-                
-                document.addEventListener('click', function(e) {
-                    if (!wrapper.contains(e.target)) {
-                        copyBtn.classList.add('hidden');
-                    }
-                });
-                
+
                 console.log('代码块包装器创建完成');
             });
         });
