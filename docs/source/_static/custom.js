@@ -14,19 +14,51 @@ class SyntaxHighlighter {
     }
 
     loadHighlightJs() {
+        // 如果 highlight.js 已经加载，直接标记为已加载
         if (typeof hljs !== 'undefined') {
             this.highlightJsLoaded = true;
-            // Don't apply highlighting immediately - wait for proper initialization
+            return;
+        }
+
+        // 检查是否已经在加载中
+        if (document.querySelector('script[src*="highlight.js"]')) {
+            // 脚本标签已存在，等待加载完成
+            this.waitForHighlightJs();
             return;
         }
 
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
-        script.onload = () => {
+        script.async = true;
+
+        // 使用 bind 确保 this 上下文正确
+        script.onload = function() {
             this.highlightJsLoaded = true;
-            // Don't apply highlighting immediately - wait for proper initialization
-        };
+            // 触发自定义事件通知加载完成
+            document.dispatchEvent(new CustomEvent('highlightjs-loaded'));
+        }.bind(this);
+
+        script.onerror = function() {
+            console.error('Failed to load Highlight.js');
+        }.bind(this);
+
         document.head.appendChild(script);
+    }
+
+    // 等待 highlight.js 加载完成的轮询方法
+    waitForHighlightJs(maxAttempts = 50) {
+        let attempts = 0;
+        const checkInterval = setInterval(() => {
+            attempts++;
+            if (typeof hljs !== 'undefined') {
+                clearInterval(checkInterval);
+                this.highlightJsLoaded = true;
+                document.dispatchEvent(new CustomEvent('highlightjs-loaded'));
+            } else if (attempts >= maxAttempts) {
+                clearInterval(checkInterval);
+                console.error('Timeout waiting for Highlight.js to load');
+            }
+        }, 100);
     }
 
     detectLanguage(block) {
@@ -104,28 +136,42 @@ class SyntaxHighlighter {
 
     // Method to ensure highlighting is applied, with retry logic
     ensureHighlightingApplied(maxRetries = 20) {
-        if (this.highlightJsLoaded && typeof hljs !== 'undefined') {
-            this.applyHighlighting();
-            
-            // Check if highlighting was actually applied
-            const highlightedBlocks = document.querySelectorAll('div.highlight pre.hljs');
-            console.log('Highlighting applied to', highlightedBlocks.length, 'code blocks');
-            
-            if (highlightedBlocks.length === 0 && maxRetries > 0) {
-                // If no blocks were highlighted, try again after a delay
-                console.log('No blocks highlighted, retrying...');
+        // 检查 highlight.js 是否已加载
+        if (!this.highlightJsLoaded || typeof hljs === 'undefined') {
+            // 如果 Highlight.js 还未加载，等待加载完成事件
+            console.log('Waiting for Highlight.js to load...');
+
+            // 监听加载完成事件
+            const onLoaded = () => {
+                document.removeEventListener('highlightjs-loaded', onLoaded);
+                this.ensureHighlightingApplied(maxRetries);
+            };
+            document.addEventListener('highlightjs-loaded', onLoaded);
+
+            // 同时设置超时重试
+            if (maxRetries > 0) {
                 setTimeout(() => {
+                    document.removeEventListener('highlightjs-loaded', onLoaded);
                     this.ensureHighlightingApplied(maxRetries - 1);
                 }, 200);
             }
-        } else {
-            // If Highlight.js is not loaded yet, wait a bit and try again
-            console.log('Waiting for Highlight.js to load...');
-            if (maxRetries > 0) {
-                setTimeout(() => {
-                    this.ensureHighlightingApplied(maxRetries - 1);
-                }, 100);
-            }
+            return;
+        }
+
+        // highlight.js 已加载，应用高亮
+        this.applyHighlighting();
+
+        // 检查是否成功应用高亮
+        const highlightedBlocks = document.querySelectorAll('div.highlight pre.hljs');
+        console.log('Highlighting applied to', highlightedBlocks.length, 'code blocks');
+
+        // 如果没有代码块被高亮，可能是代码块还未被渲染，稍后重试
+        const totalCodeBlocks = document.querySelectorAll('div.highlight pre').length;
+        if (highlightedBlocks.length < totalCodeBlocks && maxRetries > 0) {
+            console.log('Not all blocks highlighted, retrying...');
+            setTimeout(() => {
+                this.ensureHighlightingApplied(maxRetries - 1);
+            }, 200);
         }
     }
 
@@ -604,16 +650,19 @@ function initializeFeatures() {
 function initializeAfterDOMReady(syntaxHighlighter) {
     // First, create CodeBlockManager and wrap all code blocks
     const codeBlockManager = new CodeBlockManager();
-    
-    // Wait a small amount of time to ensure wrapping is complete
-    setTimeout(() => {
-        // Now apply syntax highlighting to the wrapped blocks
-        syntaxHighlighter.ensureHighlightingApplied();
-        
-        // Then initialize other components
-        new ThemeManager(syntaxHighlighter);
-        new LanguageSwitcher();
-    }, 100);
+
+    // 初始化其他组件（主题管理器、语言切换器）
+    const themeManager = new ThemeManager(syntaxHighlighter);
+    new LanguageSwitcher();
+
+    // 使用 requestAnimationFrame 确保 DOM 完全渲染后再应用高亮
+    // 这比 setTimeout 更可靠，因为它在浏览器绘制之前执行
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            // 双重 RAF 确保代码块已经完全渲染
+            syntaxHighlighter.ensureHighlightingApplied();
+        });
+    });
 }
 
 initializeFeatures();
