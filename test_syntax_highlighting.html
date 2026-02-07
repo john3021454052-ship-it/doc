@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试语法高亮修复</title>
+    <link rel="stylesheet" type="text/css" href="docs/source/_static/custom.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin-bottom: 40px;
+        }
+        h2 {
+            border-bottom: 2px solid #e1e4e5;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>测试语法高亮修复</h1>
+    <p>此页面用于验证语法高亮是否正常工作。</p>
+
+    <div class="test-section">
+        <h2>Python 代码</h2>
+        <div class="highlight-python notranslate">
+            <div class="highlight">
+                <pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">example_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s1">'your_api_key'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Hello World'</span><span class="p">)</span>
+</pre></div>
+        </div>
+        <p><strong>预期效果：</strong>代码应该有语法高亮，关键字为深蓝色，字符串为深绿色，背景为浅灰色。</p>
+    </div>
+
+    <div class="test-section">
+        <h2>JavaScript 代码</h2>
+        <div class="highlight-javascript notranslate">
+            <div class="highlight">
+                <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">'https://api.example.com/data'</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">data</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+        </div>
+        <p><strong>预期效果：</strong>代码应该有语法高亮，与 Python 代码的配色方案一致。</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Bash 代码</h2>
+        <div class="highlight-bash notranslate">
+            <div class="highlight">
+                <pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>example-api-sdk
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"Installation complete"</span>
+</pre></div>
+        </div>
+        <p><strong>预期效果：</strong>命令应该有适当的颜色高亮。</p>
+    </div>
+
+    <div class="test-section">
+        <h2>深色模式测试</h2>
+        <button id="toggle-dark-mode" style="padding: 10px 20px; cursor: pointer;">切换到深色模式</button>
+        <p id="mode-indicator" style="margin-top: 10px;">当前模式：浅色</p>
+    </div>
+
+    <!-- Load custom.js which includes SyntaxHighlighter -->
+    <script src="docs/source/_static/custom.js"></script>
+    
+    <script>
+        // 切换深色/浅色模式
+        document.getElementById('toggle-dark-mode').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('mode-indicator').textContent = '当前模式：' + (isDark ? '深色' : '浅色');
+            this.textContent = isDark ? '切换到浅色模式' : '切换到深色模式';
+        });
+    </script>
+</body>
+</html>

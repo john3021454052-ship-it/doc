@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>完整测试 - 语法高亮和代码块增强</title>
+    <link rel="stylesheet" type="text/css" href="docs/source/_static/custom.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin-bottom: 40px;
+        }
+        h2 {
+            border-bottom: 2px solid #e1e4e5;
+            padding-bottom: 10px;
+        }
+        .debug-info {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>完整测试 - 语法高亮和代码块增强</h1>
+    <p>此页面用于测试语法高亮和代码块增强功能是否正常工作。</p>
+
+    <div class="test-section">
+        <h2>Python 代码块</h2>
+        <div class="highlight-python notranslate">
+            <div class="highlight">
+                <pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">example_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s1">'your_api_key'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">process_data</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processing item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">DataProcessor</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">"Processing complete"</span>
+</pre></div>
+        </div>
+        <p><strong>预期效果：</strong>代码应该有完整的语法高亮，包括关键字、字符串、注释等。背景色应为浅灰色，代码块应有复制按钮和语言标签。</p>
+    </div>
+
+    <div class="test-section">
+        <h2>JavaScript 代码块</h2>
+        <div class="highlight-javascript notranslate">
+            <div class="highlight">
+                <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">'https://api.example.com/data'</span><span class="p">,</span> <span class="p">{</span>
+<span class="w">      </span><span class="na">method</span><span class="p">:</span> <span class="s1">'POST'</span><span class="p">,</span>
+<span class="w">      </span><span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
+<span class="w">        </span><span class="s1">'Content-Type'</span><span class="p">:</span> <span class="s1">'application/json'</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">'Authorization'</span><span class="p">:</span> <span class="s1">'Bearer token'</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="na">body</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="na">query</span><span class="p">:</span> <span class="s1">'test'</span><span class="p">})</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">data</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="kd">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">'Error fetching data:'</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="p">);</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="nx">error</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// Usage example</span>
+<span class="nx">fetchData</span><span class="p">()</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Data:'</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="nx">catch</span><span class="p">(</span><span class="nx">error</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">'Failed:'</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="p">));</span>
+</pre></div>
+        </div>
+        <p><strong>预期效果：</strong>JavaScript 代码应该有适当的语法高亮，关键字、字符串、注释等颜色正确。</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Bash 代码块</h2>
+        <div class="highlight-bash notranslate">
+            <div class="highlight">
+                <pre><span></span># Install the package
+pip<span class="w"> </span>install<span class="w"> </span>example-api-sdk
+
+# Run the example script
+python<span class="w"> </span>example.py<span class="w"> </span>--config<span class="w"> </span>config.json
+
+# Check the version
+example-cli<span class="w"> </span>--version
+
+# Show help
+example-cli<span class="w"> </span>--help
+</pre></div>
+        </div>
+        <p><strong>预期效果：</strong>Bash 命令应该有适当的高亮，注释为斜体。</p>
+    </div>
+
+    <div class="test-section">
+        <h2>深色模式测试</h2>
+        <button id="toggle-dark-mode" style="padding: 10px 20px; cursor: pointer;">切换到深色模式</button>
+        <p id="mode-indicator" style="margin-top: 10px;">当前模式：浅色</p>
+        <div class="debug-info" id="debug-info">
+            等待初始化完成...
+        </div>
+    </div>
+
+    <!-- Load custom.js which includes all the functionality -->
+    <script src="docs/source/_static/custom.js"></script>
+    
+    <script>
+        // 切换深色/浅色模式
+        document.getElementById('toggle-dark-mode').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('mode-indicator').textContent = '当前模式：' + (isDark ? '深色' : '浅色');
+            this.textContent = isDark ? '切换到浅色模式' : '切换到深色模式';
+        });
+        
+        // 更新调试信息
+        setTimeout(() => {
+            const debugInfo = document.getElementById('debug-info');
+            const codeBlocks = document.querySelectorAll('div.highlight pre.hljs');
+            const wrappedBlocks = document.querySelectorAll('.code-block-wrapper');
+            
+            debugInfo.innerHTML = `
+                <strong>调试信息：</strong><br>
+                代码块总数：${document.querySelectorAll('div.highlight').length}<br>
+                已高亮代码块：${codeBlocks.length}<br>
+                已包装代码块：${wrappedBlocks.length}<br>
+                当前主题：${document.body.classList.contains('dark-mode') ? '深色' : '浅色'}
+            `;
+        }, 2000);
+    </script>
+</body>
+</html>
