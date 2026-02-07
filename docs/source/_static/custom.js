@@ -509,9 +509,13 @@ class CodeBlockManager {
     }
 
     init() {
-        document.addEventListener('DOMContentLoaded', () => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.enhanceCodeBlocks();
+            });
+        } else {
             this.enhanceCodeBlocks();
-        });
+        }
     }
 
     enhanceCodeBlocks() {

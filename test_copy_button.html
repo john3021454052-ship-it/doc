@@ -8,7 +8,9 @@
 </head>
 <body>
     <h1>测试 Copy 按钮功能</h1>
-    
+    <p>这个页面用于测试代码块的 copy 按钮是否正常显示和工作。</p>
+
+    <h2>Python 代码示例</h2>
     <div class="highlight-python notranslate">
         <div class="highlight">
             <pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">example_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
@@ -17,86 +19,27 @@
 <span class="nb">print</span><span class="p">(</span><span class="s1">'Hello World'</span><span class="p">)</span>
 </pre></div>
     </div>
-    
+
+    <h2>Bash 代码示例</h2>
     <div class="highlight-bash notranslate">
         <div class="highlight">
             <pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>example-api-sdk
 <span class="nb">echo</span><span class="w"> </span><span class="s2">"Installation complete"</span>
 </pre></div>
     </div>
-    
-    <script>
-        // Copy button functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const codeBlocks = document.querySelectorAll('div[class*="highlight-"]');
 
-            codeBlocks.forEach((outerBlock) => {
-                if (outerBlock.dataset.enhanced) return;
+    <h2>JavaScript 代码示例</h2>
+    <div class="highlight-javascript notranslate">
+        <div class="highlight">
+            <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">greeting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Hello, World!"</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">greeting</span><span class="p">);</span>
 
-                const innerHighlight = outerBlock.querySelector('div.highlight');
-                if (!innerHighlight) {
-                    outerBlock.dataset.enhanced = 'true';
-                    return;
-                }
+<span class="kd">function</span><span class="w"> </span><span class="nx">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+    </div>
 
-                // Create wrapper
-                const wrapper = document.createElement('div');
-                wrapper.className = 'code-block-wrapper';
-                innerHighlight.parentNode.insertBefore(wrapper, innerHighlight);
-
-                // Create header with copy button
-                const headerDiv = document.createElement('div');
-                headerDiv.className = 'code-block-header';
-
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'copy-btn';
-                copyBtn.title = 'Copy Code';
-                copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-                copyBtn.onclick = function() {
-                    const pre = innerHighlight.querySelector('pre');
-                    if (pre) {
-                        navigator.clipboard.writeText(pre.textContent).then(() => {
-                            copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-                            copyBtn.classList.add('copied');
-                            setTimeout(() => {
-                                copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-                                copyBtn.classList.remove('copied');
-                            }, 2000);
-                        });
-                    }
-                };
-
-                headerDiv.appendChild(copyBtn);
-                wrapper.appendChild(headerDiv);
-
-                // Create controls
-                const controlsDiv = document.createElement('div');
-                controlsDiv.className = 'code-block-controls';
-
-                const dotsDiv = document.createElement('div');
-                dotsDiv.className = 'mac-dots';
-                dotsDiv.innerHTML = '<span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>';
-                controlsDiv.appendChild(dotsDiv);
-
-                const langSpan = document.createElement('span');
-                langSpan.className = 'code-lang';
-                const classList = Array.from(outerBlock.classList);
-                for (const className of classList) {
-                    if (className.startsWith('highlight-')) {
-                        const lang = className.replace('highlight-', '');
-                        langSpan.textContent = lang !== 'default' ? lang.toUpperCase() : 'CODE';
-                        break;
-                    }
-                }
-                if (!langSpan.textContent) langSpan.textContent = 'CODE';
-                controlsDiv.appendChild(langSpan);
-
-                wrapper.appendChild(controlsDiv);
-                wrapper.appendChild(innerHighlight);
-
-                outerBlock.dataset.enhanced = 'true';
-            });
-        });
-    </script>
+    <script src="docs/source/_static/custom.js"></script>
 </body>
 </html>
