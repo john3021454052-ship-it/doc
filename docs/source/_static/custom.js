@@ -505,36 +505,29 @@ class CodeBlockLineNumbers {
 class CodeBlockManager {
     constructor() {
         this.wrappers = new Map();
-        this.init();
     }
 
     init() {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.enhanceCodeBlocks();
-            });
-        } else {
-            this.enhanceCodeBlocks();
-        }
+        this.enhanceCodeBlocks();
     }
 
     enhanceCodeBlocks() {
         // 选择 Sphinx 生成的代码块的最外层容器
         const codeBlocks = document.querySelectorAll('div[class*="highlight-"]');
-        
+
         codeBlocks.forEach((outerBlock) => {
             if (outerBlock.dataset.enhanced) return;
-            
+
             // 查找内层的 div.highlight（实际的代码块容器）
             const innerHighlight = outerBlock.querySelector('div.highlight');
             if (!innerHighlight) {
                 outerBlock.dataset.enhanced = 'true';
                 return;
             }
-            
+
             const wrapper = new CodeBlockWrapper(innerHighlight);
             wrapper.create();
-            
+
             this.wrappers.set(innerHighlight, wrapper);
             outerBlock.dataset.enhanced = 'true';
         });
@@ -547,7 +540,8 @@ function initializeFeatures() {
     const syntaxHighlighter = new SyntaxHighlighter();
     new ThemeManager(syntaxHighlighter);
     new LanguageSwitcher();
-    new CodeBlockManager();
+    const codeBlockManager = new CodeBlockManager();
+    codeBlockManager.init();
 }
 
 if (document.readyState === 'loading') {
