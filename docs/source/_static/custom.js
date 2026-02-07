@@ -87,6 +87,10 @@ class SyntaxHighlighter {
 
         document.querySelectorAll('div.highlight pre').forEach((block) => {
             if (!block.classList.contains('hljs')) {
+                // Clear Pygments-generated markup and get pure text
+                const plainText = block.textContent;
+                block.textContent = plainText;
+
                 const language = this.detectLanguage(block);
                 if (language) {
                     block.classList.add('language-' + language);
@@ -103,6 +107,10 @@ class SyntaxHighlighter {
 
         document.querySelectorAll('div.highlight pre').forEach((block) => {
             if (block.classList.contains('hljs')) {
+                // Clear Pygments-generated markup and get pure text
+                const plainText = block.textContent;
+                block.textContent = plainText;
+
                 block.classList.remove('hljs');
                 const classes = Array.from(block.classList).filter(c => c.startsWith('language-'));
                 classes.forEach(c => block.classList.remove(c));
