@@ -152,24 +152,10 @@ code {
 .code-block-wrapper {
     position: relative;
     margin: 2em 0;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     border-radius: 10px;
     overflow: hidden;
-    border: 1px solid var(--border-color);
+    border: none;
     transition: all 0.3s ease;
-}
-
-.code-block-wrapper:hover {
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-    transform: translateY(-2px);
-}
-
-body.dark-mode .code-block-wrapper {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-body.dark-mode .code-block-wrapper:hover {
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
 }
 
 /* Code block header - reserved line for edit button */

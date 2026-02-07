@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Code Block Border Test</title>
+    <link rel="stylesheet" href="docs/source/_static/custom.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-section">
+        <h1>代码块边框测试 / Code Block Border Test</h1>
+        <p>下面是一个带有仿mac样式的代码块，应该没有外边框：</p>
+        <p>Below is a code block with Mac-style dots but without outer border:</p>
+
+        <!-- 模拟一个代码块 -->
+        <div class="code-block-wrapper">
+            <div class="code-block-header">
+                <button class="copy-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+            </div>
+            <div class="code-block-controls">
+                <div class="mac-dots">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <span class="code-lang">PYTHON</span>
+            </div>
+            <pre class="highlight"><code>def hello_world():
+    print("Hello, World!")
+    return True
+
+# This is a test code block
+result = hello_world()
+</code></pre>
+        </div>
+
+        <h2>预期结果 / Expected Results:</h2>
+        <ul>
+            <li>✅ 保留红色、黄色、绿色三个圆点（仿mac样式）</li>
+            <li>✅ 保留复制按钮</li>
+            <li>✅ 保留语言标签（PYTHON）</li>
+            <li>❌ 移除包裹代码块的方框边框</li>
+            <li>❌ 移除阴影效果</li>
+        </ul>
+    </div>
+</body>
+</html>
