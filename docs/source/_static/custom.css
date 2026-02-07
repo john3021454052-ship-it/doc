@@ -65,6 +65,7 @@ body.dark-mode code {
     background-color: var(--code-bg);
     color: #ce9178;
     border: 1px solid var(--border-color);
+    font-size: 14px;
 }
 
 body.dark-mode .wy-side-nav-search input[type="text"] {
@@ -144,6 +145,10 @@ body.dark-mode .language-switcher-sidebar select {
 }
 
 /* Code block enhancements */
+code {
+    font-size: 14px;
+}
+
 .code-block-wrapper {
     position: relative;
     margin: 2em 0;
