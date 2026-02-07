@@ -673,6 +673,7 @@ body.dark-mode .hljs-property {
 /* Ensure code blocks use the highlight.js styling */
 .highlight pre {
     padding: 0 !important;
+    margin: 0 !important;
 }
 
 .hljs {
@@ -682,6 +683,11 @@ body.dark-mode .hljs-property {
     border-radius: 0;
     font-size: 14px;
     line-height: 1.5;
+    background: #f5f5f5 !important;
+}
+
+body.dark-mode .hljs {
+    background: #2b2b2b !important;
 }
 
 /* Override Sphinx's default code block styling to use Highlight.js */

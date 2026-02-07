@@ -16,7 +16,7 @@ class SyntaxHighlighter {
     loadHighlightJs() {
         if (typeof hljs !== 'undefined') {
             this.highlightJsLoaded = true;
-            this.applyHighlighting();
+            // Don't apply highlighting immediately - wait for proper initialization
             return;
         }
 
@@ -24,7 +24,7 @@ class SyntaxHighlighter {
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js';
         script.onload = () => {
             this.highlightJsLoaded = true;
-            this.applyHighlighting();
+            // Don't apply highlighting immediately - wait for proper initialization
         };
         document.head.appendChild(script);
     }
@@ -82,9 +82,11 @@ class SyntaxHighlighter {
 
     applyHighlighting() {
         if (!this.highlightJsLoaded || typeof hljs === 'undefined') {
+            console.log('Highlight.js not loaded yet, skipping highlighting');
             return;
         }
 
+        console.log('Applying syntax highlighting to code blocks');
         document.querySelectorAll('div.highlight pre').forEach((block) => {
             if (!block.classList.contains('hljs')) {
                 // Clear Pygments-generated markup and get pure text
@@ -98,6 +100,33 @@ class SyntaxHighlighter {
                 hljs.highlightElement(block);
             }
         });
+    }
+
+    // Method to ensure highlighting is applied, with retry logic
+    ensureHighlightingApplied(maxRetries = 20) {
+        if (this.highlightJsLoaded && typeof hljs !== 'undefined') {
+            this.applyHighlighting();
+            
+            // Check if highlighting was actually applied
+            const highlightedBlocks = document.querySelectorAll('div.highlight pre.hljs');
+            console.log('Highlighting applied to', highlightedBlocks.length, 'code blocks');
+            
+            if (highlightedBlocks.length === 0 && maxRetries > 0) {
+                // If no blocks were highlighted, try again after a delay
+                console.log('No blocks highlighted, retrying...');
+                setTimeout(() => {
+                    this.ensureHighlightingApplied(maxRetries - 1);
+                }, 200);
+            }
+        } else {
+            // If Highlight.js is not loaded yet, wait a bit and try again
+            console.log('Waiting for Highlight.js to load...');
+            if (maxRetries > 0) {
+                setTimeout(() => {
+                    this.ensureHighlightingApplied(maxRetries - 1);
+                }, 100);
+            }
+        }
     }
 
     reapplyHighlighting() {
@@ -451,6 +480,7 @@ class CodeBlockWrapper {
     }
 
     create() {
+        console.log('Creating wrapper for code block');
         this.wrapper = document.createElement('div');
         this.wrapper.className = 'code-block-wrapper';
 
@@ -464,6 +494,7 @@ class CodeBlockWrapper {
 
         this.wrapper.appendChild(this.codeBlock);
 
+        console.log('Wrapper created successfully');
         return this.wrapper;
     }
 }
@@ -511,24 +542,32 @@ class CodeBlockManager {
     }
 
     init() {
-        document.addEventListener('DOMContentLoaded', () => {
-            this.enhanceCodeBlocks();
-        });
+        // Run immediately instead of waiting for DOMContentLoaded
+        // This is called after DOM is ready in the main initialization
+        this.enhanceCodeBlocks();
     }
 
     enhanceCodeBlocks() {
+        console.log('Enhancing code blocks...');
         // 选择 Sphinx 生成的代码块的最外层容器
         const codeBlocks = document.querySelectorAll('div[class*="highlight-"]');
+        console.log('Found', codeBlocks.length, 'code blocks to enhance');
         
-        codeBlocks.forEach((outerBlock) => {
-            if (outerBlock.dataset.enhanced) return;
+        codeBlocks.forEach((outerBlock, index) => {
+            if (outerBlock.dataset.enhanced) {
+                console.log('Code block', index, 'already enhanced, skipping');
+                return;
+            }
             
             // 查找内层的 div.highlight（实际的代码块容器）
             const innerHighlight = outerBlock.querySelector('div.highlight');
             if (!innerHighlight) {
+                console.log('Code block', index, 'has no inner highlight div, skipping');
                 outerBlock.dataset.enhanced = 'true';
                 return;
             }
+            
+            console.log('Enhancing code block', index);
             
             // 从外层容器获取语言类型
             const langClass = Array.from(outerBlock.classList).find(cls => cls.startsWith('highlight-'));
@@ -542,6 +581,8 @@ class CodeBlockManager {
             this.wrappers.set(innerHighlight, wrapper);
             outerBlock.dataset.enhanced = 'true';
         });
+        
+        console.log('Code block enhancement complete');
     }
 }
 
@@ -549,13 +590,30 @@ class CodeBlockManager {
 // Initialization
 function initializeFeatures() {
     const syntaxHighlighter = new SyntaxHighlighter();
-    new ThemeManager(syntaxHighlighter);
-    new LanguageSwitcher();
-    new CodeBlockManager();
+    
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeAfterDOMReady(syntaxHighlighter);
+        });
+    } else {
+        initializeAfterDOMReady(syntaxHighlighter);
+    }
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeFeatures);
-} else {
-    initializeFeatures();
+function initializeAfterDOMReady(syntaxHighlighter) {
+    // First, create CodeBlockManager and wrap all code blocks
+    const codeBlockManager = new CodeBlockManager();
+    
+    // Wait a small amount of time to ensure wrapping is complete
+    setTimeout(() => {
+        // Now apply syntax highlighting to the wrapped blocks
+        syntaxHighlighter.ensureHighlightingApplied();
+        
+        // Then initialize other components
+        new ThemeManager(syntaxHighlighter);
+        new LanguageSwitcher();
+    }, 100);
 }
+
+initializeFeatures();
