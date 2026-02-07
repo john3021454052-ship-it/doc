@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试 .hljs 修复</title>
+    <link rel="stylesheet" type="text/css" href="docs/source/_static/custom.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin-bottom: 40px;
+        }
+        h2 {
+            border-bottom: 2px solid #e1e4e5;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>测试 .hljs 样式修复</h1>
+    <p>此页面用于验证 highlight.js 的 CSS 样式是否正确应用。</p>
+
+    <div class="test-section">
+        <h2>Python 代码（浅色模式）</h2>
+        <div class="highlight-python notranslate">
+            <div class="highlight">
+                <pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">example_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s1">'your_api_key'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Hello World'</span><span class="p">)</span>
+</pre></div>
+        </div>
+        <p><strong>预期效果：</strong>代码应该有语法高亮，背景色为浅灰色 (#f5f5f5)，关键字为深蓝色 (#000080)，字符串为深绿色 (#008000)。</p>
+    </div>
+
+    <div class="test-section">
+        <h2>JavaScript 代码</h2>
+        <div class="highlight-javascript notranslate">
+            <div class="highlight">
+                <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">'https://api.example.com/data'</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">await</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">data</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+        </div>
+        <p><strong>预期效果：</strong>代码应该有语法高亮，颜色与 Python 代码的配色方案一致。</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Bash 代码</h2>
+        <div class="highlight-bash notranslate">
+            <div class="highlight">
+                <pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>example-api-sdk
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"Installation complete"</span>
+</pre></div>
+        </div>
+        <p><strong>预期效果：</strong>命令应该有适当的颜色高亮。</p>
+    </div>
+
+    <div class="test-section">
+        <h2>深色模式测试</h2>
+        <button id="toggle-dark-mode" style="padding: 10px 20px; cursor: pointer;">切换到深色模式</button>
+        <p id="mode-indicator" style="margin-top: 10px;">当前模式：浅色</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        // 切换深色/浅色模式
+        document.getElementById('toggle-dark-mode').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('mode-indicator').textContent = '当前模式：' + (isDark ? '深色' : '浅色');
+            this.textContent = isDark ? '切换到浅色模式' : '切换到深色模式';
+
+            // 重新应用高亮
+            document.querySelectorAll('div.highlight pre').forEach((block) => {
+                if (!block.classList.contains('hljs')) {
+                    // 清除 Pygments 标记
+                    const plainText = block.textContent;
+                    block.textContent = plainText;
+
+                    // 检测语言
+                    const parent = block.parentElement.parentElement;
+                    const classList = Array.from(parent.classList);
+                    let language = null;
+                    for (const className of classList) {
+                        if (className.startsWith('highlight-')) {
+                            const lang = className.replace('highlight-', '');
+                            const langMap = {
+                                'python': 'python',
+                                'javascript': 'javascript',
+                                'bash': 'bash',
+                                'default': null
+                            };
+                            language = langMap[lang.toLowerCase()] || null;
+                            break;
+                        }
+                    }
+
+                    if (language) {
+                        block.classList.add('language-' + language);
+                    }
+                    hljs.highlightElement(block);
+                }
+            });
+        });
+
+        // 页面加载后应用高亮
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始应用语法高亮...');
+
+            document.querySelectorAll('div.highlight pre').forEach((block, index) => {
+                console.log('处理代码块', index);
+
+                // 清除 Pygments 标记
+                const plainText = block.textContent;
+                block.textContent = plainText;
+
+                // 检测语言
+                const parent = block.parentElement.parentElement;
+                const classList = Array.from(parent.classList);
+                let language = null;
+                for (const className of classList) {
+                    if (className.startsWith('highlight-')) {
+                        const lang = className.replace('highlight-', '');
+                        const langMap = {
+                            'python': 'python',
+                            'javascript': 'javascript',
+                            'bash': 'bash',
+                            'default': null
+                        };
+                        language = langMap[lang.toLowerCase()] || null;
+                        break;
+                    }
+                }
+
+                if (language) {
+                    block.classList.add('language-' + language);
+                }
+                hljs.highlightElement(block);
+
+                console.log('代码块', index, '处理完成，hljs 类:', block.classList.contains('hljs'));
+            });
+
+            console.log('所有代码块处理完成');
+        });
+    </script>
+</body>
+</html>
